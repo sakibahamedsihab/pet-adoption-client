@@ -5,7 +5,7 @@ import { usePathname } from "next/navigation";
 import { Button } from "@heroui/react";
 
 const Navbar = () => {
-  const user = false;
+  const user = true;
   const pathname = usePathname();
 
   const navLinks = [
@@ -46,7 +46,7 @@ const Navbar = () => {
         {/* Auth Buttons */}
         <div className="flex items-center gap-3">
           {user ? (
-            <Link href="/register">
+            <Link href="/add-pet">
               <button className="font-mono font-bold text-xs uppercase tracking-widest text-[#FAF6EE] bg-[#7B1F1F] border-[2px] border-[#2B1A0E] px-5 py-2 shadow-[4px_4px_0px_#2B1A0E] hover:shadow-[2px_2px_0px_#2B1A0E] hover:translate-x-[2px] hover:translate-y-[2px] transition-all duration-150 cursor-pointer">
                 ✦ Add Pet
               </button>
