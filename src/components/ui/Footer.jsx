@@ -1,43 +1,56 @@
 import Link from "next/link";
 
 const Footer = () => {
-  const links = [
-    { label: "Contact Us", href: "/contact" },
-    { label: "Privacy Policy", href: "/privacy" },
-    { label: "Terms of Service", href: "/terms" },
-    { label: "Volunteer", href: "/volunteer" },
-    { label: "Donate", href: "/donate" },
-  ];
-
   return (
-    <footer className="bg-[#ede8e0]">
-      <div className="max-w-7xl mx-auto py-8 flex items-start justify-between gap-12">
-        {/* Left — Logo + Copyright */}
-        <div className="flex flex-col gap-3">
-          <div className="flex items-center gap-2">
-            <span className="text-xl">🐾</span>
-            <span className="text-[#7c3b1e] text-base font-medium">
-              PawsHome
-            </span>
+    <footer className="bg-[#FAF6EE] border-t-[3px] border-[#2B1A0E] px-4 py-12 mt-auto">
+      <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-10">
+        {/* Branding & Copyright */}
+        <div className="flex flex-col gap-4">
+          <h2 className="font-serif text-3xl font-black text-[#2B1A0E]">
+            PawsHome
+          </h2>
+          <p className="font-mono text-sm text-[#7B4F2E]">
+            Find your new best friend today. Adopt, do not shop!
+          </p>
+          <div className="mt-auto pt-4">
+            <p className="font-mono text-xs font-bold text-[#2B1A0E] uppercase tracking-widest bg-[#F5EDE0] inline-block border-[2px] border-[#2B1A0E] px-3 py-1.5 shadow-[3px_3px_0px_#2B1A0E]">
+              © {new Date().getFullYear()} PawsHome
+            </p>
           </div>
-          <p className="text-[#5c4a3a] text-sm leading-relaxed max-w-[200px]">
-            © 2024 PawsHome. Dedicated to finding every pet a loving home.
+        </div>
+
+        {/* Contact Information */}
+        <div className="flex flex-col gap-3">
+          <h3 className="font-mono text-sm font-bold text-[#7B1F1F] uppercase tracking-widest mb-2 border-b-2 border-dashed border-[#C9922A] pb-2 inline-block w-max">
+            ✦ Contact Info
+          </h3>
+          <p className="font-mono text-sm text-[#2B1A0E]">
+            <span className="font-bold text-[#7B4F2E]">Email:</span>{" "}
+            hello@pawshome.com
+          </p>
+          <p className="font-mono text-sm text-[#2B1A0E]">
+            <span className="font-bold text-[#7B4F2E]">Phone:</span> +880 1234
+            567890
+          </p>
+          <p className="font-mono text-sm text-[#2B1A0E]">
+            <span className="font-bold text-[#7B4F2E]">Location:</span> Dhaka,
+            Bangladesh
           </p>
         </div>
 
-        {/* Right — Links */}
+        {/* Social Links */}
         <div className="flex flex-col gap-3">
-          <span className="text-[#5c4a3a] text-xs font-semibold tracking-widest uppercase">
-            Links
-          </span>
-          <div className="flex items-center gap-6 flex-wrap">
-            {links.map(({ label, href }) => (
+          <h3 className="font-mono text-sm font-bold text-[#7B1F1F] uppercase tracking-widest mb-2 border-b-2 border-dashed border-[#C9922A] pb-2 inline-block w-max">
+            ✦ Social Links
+          </h3>
+          <div className="flex flex-col gap-3">
+            {["Facebook", "Twitter", "Instagram"].map((social) => (
               <Link
-                key={href}
-                href={href}
-                className="text-sm text-[#3a2a1a] no-underline hover:text-[#7c3b1e] transition-colors"
+                key={social}
+                href={`#${social.toLowerCase()}`}
+                className="font-mono text-sm text-[#2B1A0E] font-bold hover:text-[#7B1F1F] hover:translate-x-[4px] transition-transform w-fit flex items-center gap-2"
               >
-                {label}
+                <span className="text-[#C9922A]">→</span> {social}
               </Link>
             ))}
           </div>

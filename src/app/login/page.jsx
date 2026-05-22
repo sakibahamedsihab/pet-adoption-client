@@ -2,20 +2,14 @@
 
 import Link from "next/link";
 
-const RegisterPage = () => {
-  async function handleRegister(event) {
+const LoginPage = () => {
+  async function handleLogin(event) {
     event.preventDefault();
     const formData = new FormData(event.currentTarget);
     const data = Object.fromEntries(formData);
-    if (data.password < 8 && data.password != data.confirmPassword) {
-      alert("password not match");
-      return;
-    }
-    const res = await fetch("http://localhost:5000/pets", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(data),
-    });
+
+    // API কল বা অথেনটিকেশন লজিক এখানে বসবে
+    console.log("Login credentials:", data);
   }
 
   const inputClass =
@@ -26,32 +20,14 @@ const RegisterPage = () => {
 
   const fields = [
     {
-      label: "Name",
-      name: "name",
-      type: "text",
-      placeholder: "Your full name",
-    },
-    {
       label: "Email",
       name: "email",
       type: "email",
       placeholder: "you@example.com",
     },
     {
-      label: "Photo URL",
-      name: "photoURL",
-      type: "url",
-      placeholder: "https://example.com/photo.jpg",
-    },
-    {
       label: "Password",
       name: "password",
-      type: "password",
-      placeholder: "••••••••",
-    },
-    {
-      label: "Confirm Password",
-      name: "confirmPassword",
       type: "password",
       placeholder: "••••••••",
     },
@@ -63,19 +39,19 @@ const RegisterPage = () => {
         {/* Header */}
         <div className="text-center mb-8">
           <p className="font-mono text-xs text-[#7B4F2E] uppercase tracking-widest mb-2">
-            ✦ Welcome
+            ✦ Welcome Back
           </p>
           <h1 className="font-serif text-4xl font-black text-[#2B1A0E]">
             PawsHome
           </h1>
           <p className="font-mono text-xs text-[#7B4F2E] mt-2">
-            Create your account today.
+            Login to your account.
           </p>
         </div>
 
         {/* Card */}
         <div className="bg-[#FAF6EE] border-[3px] border-[#2B1A0E] shadow-[8px_8px_0px_#2B1A0E] p-8">
-          <form onSubmit={handleRegister} className="flex flex-col gap-5">
+          <form onSubmit={handleLogin} className="flex flex-col gap-5">
             {fields.map(({ label, name, type, placeholder }) => (
               <div key={name}>
                 <label className={labelClass}>{label}</label>
@@ -83,7 +59,7 @@ const RegisterPage = () => {
                   name={name}
                   type={type}
                   placeholder={placeholder}
-                  required={name !== "photoURL"}
+                  required
                   className={inputClass}
                 />
               </div>
@@ -95,17 +71,17 @@ const RegisterPage = () => {
               type="submit"
               className="w-full font-mono font-bold text-xs uppercase tracking-widest text-[#FAF6EE] bg-[#7B1F1F] border-[2px] border-[#2B1A0E] py-3 shadow-[5px_5px_0px_#2B1A0E] hover:shadow-[2px_2px_0px_#2B1A0E] hover:translate-x-[3px] hover:translate-y-[3px] transition-all duration-150 cursor-pointer"
             >
-              ✦ Create Account
+              ✦ Login
             </button>
           </form>
 
           <p className="font-mono text-xs text-[#7B4F2E] text-center mt-6">
-            Already have an account?{" "}
+            Do not have an account?{" "}
             <Link
-              href="/login"
+              href="/register"
               className="text-[#7B1F1F] font-bold hover:underline"
             >
-              Login
+              Register
             </Link>
           </p>
         </div>
@@ -114,4 +90,4 @@ const RegisterPage = () => {
   );
 };
 
-export default RegisterPage;
+export default LoginPage;

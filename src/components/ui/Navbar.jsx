@@ -3,7 +3,6 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Button } from "@heroui/react";
-import Image from "next/image";
 
 const Navbar = () => {
   const user = false;
@@ -18,26 +17,25 @@ const Navbar = () => {
   }
 
   return (
-    <main className="bg-[#fdf8f3] z-10 shadow-xs">
-      <nav className="max-w-7xl mx-auto flex items-center justify-between">
+    <header className="bg-[#FAF6EE] border-b-[3px] border-[#2B1A0E] z-10">
+      <nav className="max-w-7xl mx-auto px-8 py-4 flex items-center justify-between">
         {/* Logo */}
-        <Link href="/" className="flex items-center gap-2 no-underline">
-          <Image src="/logo.png" alt="PawsHome logo" width={36} height={36} />
-          <span className="text-[#7c3b1e] text-lg font-medium tracking-tight">
+        <Link href="/" className="no-underline">
+          <span className="font-serif text-2xl font-black text-[#7B1F1F] tracking-tight">
             PawsHome
           </span>
         </Link>
 
         {/* Nav Links */}
-        <div className="flex items-center gap-8">
+        <div className="flex items-center gap-10">
           {navLinks.map(({ label, href }) => (
             <Link
               key={href}
               href={href}
-              className={`text-sm no-underline transition-colors ${
+              className={`font-mono text-xs uppercase tracking-widest no-underline transition-colors ${
                 pathname === href
-                  ? "text-[#7c3b1e] font-medium border-b-2 border-[#7c3b1e] pb-0.5"
-                  : "text-[#5c4a3a]"
+                  ? "text-[#7B1F1F] font-bold border-b-2 border-[#7B1F1F] pb-0.5"
+                  : "text-[#4A2E1A] hover:text-[#7B1F1F]"
               }`}
             >
               {label}
@@ -46,45 +44,30 @@ const Navbar = () => {
         </div>
 
         {/* Auth Buttons */}
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-3">
           {user ? (
-            <div>
-              <Button
-                as={Link}
-                href="/register"
-                className="bg-[#7c3b1e] text-white font-medium"
-                radius="sm"
-                size="sm"
-              >
-                Add Pet
-              </Button>
-            </div>
+            <Link href="/register">
+              <button className="font-mono font-bold text-xs uppercase tracking-widest text-[#FAF6EE] bg-[#7B1F1F] border-[2px] border-[#2B1A0E] px-5 py-2 shadow-[4px_4px_0px_#2B1A0E] hover:shadow-[2px_2px_0px_#2B1A0E] hover:translate-x-[2px] hover:translate-y-[2px] transition-all duration-150 cursor-pointer">
+                ✦ Add Pet
+              </button>
+            </Link>
           ) : (
-            <div>
-              <Button
-                as={Link}
-                href="/login"
-                variant="bordered"
-                className="text-[#7c3b1e] border-[#7c3b1e] font-medium"
-                radius="sm"
-                size="sm"
-              >
-                Login
-              </Button>
-              <Button
-                as={Link}
-                href="/register"
-                className="bg-[#7c3b1e] text-white font-medium"
-                radius="sm"
-                size="sm"
-              >
-                Sign Up
-              </Button>
-            </div>
+            <>
+              <Link href="/login">
+                <button className="font-mono font-bold text-xs uppercase tracking-widest text-[#2B1A0E] bg-[#FAF6EE] border-[2px] border-[#2B1A0E] px-5 py-2 shadow-[4px_4px_0px_#2B1A0E] hover:shadow-[2px_2px_0px_#2B1A0E] hover:translate-x-[2px] hover:translate-y-[2px] transition-all duration-150 cursor-pointer">
+                  Login
+                </button>
+              </Link>
+              <Link href="/register">
+                <button className="font-mono font-bold text-xs uppercase tracking-widest text-[#FAF6EE] bg-[#7B1F1F] border-[2px] border-[#2B1A0E] px-5 py-2 shadow-[4px_4px_0px_#2B1A0E] hover:shadow-[2px_2px_0px_#2B1A0E] hover:translate-x-[2px] hover:translate-y-[2px] transition-all duration-150 cursor-pointer">
+                  Sign Up
+                </button>
+              </Link>
+            </>
           )}
         </div>
       </nav>
-    </main>
+    </header>
   );
 };
 
