@@ -10,13 +10,20 @@ import SearchFilter from "@/components/SearchFilter";
 import PetPagination from "@/components/PetPagination";
 import PetCard from "@/components/PetCard";
 
-const AllPetsPage = async () => {
+const AllPetsPage = async ({ searchParams }) => {
+  const search = searchParams?.search || "";
+  const species = searchParams?.species || "";
+
   // data fetching
   const res = await fetch(
-    "https://pet-adoption-platform-server-8g3c.onrender.com/pets",
+    `https://pet-adoption-platform-server-8g3c.onrender.com/pets?search=${search}&species=${species}`,
+    {
+      cache: "no-store",
+    },
   );
 
   const pets = await res.json();
+  console.log(pets);
 
   return (
     <div className="min-h-screen bg-[#FDF6F2] text-[#2B1A0E]">

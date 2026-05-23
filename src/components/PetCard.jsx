@@ -11,7 +11,7 @@ const PetCard = ({ pet }) => {
       {/* Image Container with Badge */}
       <div className="relative w-full h-52 border-b-[3px] border-[#2B1A0E] bg-[#2B1A0E] overflow-hidden">
         <Image
-          src={imageURL ? imageURL : ""}
+          src={imageURL}
           alt={petName ? petName : "Not Found"}
           fill
           className="object-cover"
