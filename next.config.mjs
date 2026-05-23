@@ -4,7 +4,11 @@ const nextConfig = {
     remotePatterns: [
       {
         protocol: "https",
-        hostname: "images.unsplash.com",
+        hostname: "**", // এর মানে হলো যেকোনো https লিংক থেকে ছবি সাপোর্ট করবে
+      },
+      {
+        protocol: "http",
+        hostname: "**",
       },
     ],
   },

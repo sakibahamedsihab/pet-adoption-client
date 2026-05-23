@@ -1,76 +1,72 @@
-// src/app/dashboard/my-listings/page.jsx
+// src/app/dashboard/my-requests/page.jsx
 "use client";
 
 import { useSession } from "@/lib/auth-client";
 import { useEffect, useState } from "react";
 import Link from "next/link";
 
-export default function MyListingsPage() {
+export default function MyRequestsPage() {
   const { data: session } = useSession();
-  const [pets, setPets] = useState([]);
+  const [requests, setRequests] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // ✦ মোডালের জন্য নতুন স্টেট ✦
+  // মোডালের স্টেট
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [petToDelete, setPetToDelete] = useState(null);
+  const [requestToCancel, setRequestToCancel] = useState(null);
 
   useEffect(() => {
     if (session?.user?.email) {
-      fetchMyPets();
+      fetchMyRequests();
     }
   }, [session]);
 
-  const fetchMyPets = async () => {
+  const fetchMyRequests = async () => {
     try {
       const res = await fetch(
-        `https://pet-adoption-platform-server-8g3c.onrender.com/pets?email=${session.user.email}`,
+        `https://pet-adoption-platform-server-8g3c.onrender.com/adoption-requests?email=${session.user.email}`,
       );
       const data = await res.json();
-      setPets(data);
+      setRequests(data);
       setLoading(false);
     } catch (error) {
-      console.error("Failed to fetch pets", error);
+      console.error("Failed to fetch requests", error);
       setLoading(false);
     }
   };
 
-  // ✦ ১. ডিলিট বাটনে ক্লিক করলে মোডাল ওপেন হবে ✦
-  const handleDeleteClick = (id) => {
-    setPetToDelete(id);
+  const handleCancelClick = (id) => {
+    setRequestToCancel(id);
     setIsModalOpen(true);
   };
 
-  // ✦ ২. মোডাল থেকে ক্যান্সেল করলে বন্ধ হবে ✦
-  const closeDeleteModal = () => {
+  const closeCancelModal = () => {
     setIsModalOpen(false);
-    setPetToDelete(null);
+    setRequestToCancel(null);
   };
 
-  // ✦ ৩. মোডাল থেকে কনফার্ম করলে আসল ডিলিট অপারেশন হবে ✦
-  const confirmDelete = async () => {
-    if (!petToDelete) return;
+  const confirmCancel = async () => {
+    if (!requestToCancel) return;
 
     try {
       const res = await fetch(
-        `https://pet-adoption-platform-server-8g3c.onrender.com/pets/${petToDelete}`,
+        `https://pet-adoption-platform-server-8g3c.onrender.com/adoption-requests/${requestToCancel}`,
         {
           method: "DELETE",
         },
       );
 
       if (res.ok) {
-        alert("Pet deleted successfully! 🗑️");
-        setPets((prevPets) =>
-          prevPets.filter((pet) => pet._id !== petToDelete),
+        alert("Adoption request canceled! 🚫");
+        setRequests((prev) =>
+          prev.filter((req) => req._id !== requestToCancel),
         );
       } else {
-        alert("Failed to delete pet.");
+        alert("Failed to cancel request.");
       }
     } catch (error) {
-      console.error("Error deleting pet:", error);
+      console.error("Error canceling request:", error);
     } finally {
-      // কাজ শেষে মোডাল বন্ধ করে দেওয়া
-      closeDeleteModal();
+      closeCancelModal();
     }
   };
 
@@ -78,7 +74,7 @@ export default function MyListingsPage() {
     return (
       <div className="flex justify-center items-center h-64">
         <p className="font-mono font-bold text-[#7B1F1F] animate-pulse uppercase tracking-widest">
-          Loading your pets... 🐾
+          Loading your requests... 🐾
         </p>
       </div>
     );
@@ -86,28 +82,26 @@ export default function MyListingsPage() {
 
   return (
     <div className="relative bg-[#FAF6EE] border-[3px] border-[#2B1A0E] shadow-[8px_8px_0px_#2B1A0E] p-8 max-w-5xl mx-auto min-h-[60vh]">
-      <div className="mb-8 border-b-2 border-dashed border-[#C9922A] pb-4 flex flex-col md:flex-row md:justify-between md:items-center gap-4">
-        <div>
-          <h1 className="font-serif text-3xl font-black text-[#2B1A0E]">
-            My Listings
-          </h1>
-          <p className="font-mono text-sm text-[#7B4F2E] mt-1">
-            Manage all the pets you have added for adoption.
-          </p>
-        </div>
-        <Link
-          href="/dashboard/add-pet"
-          className="font-mono font-bold text-xs uppercase tracking-widest text-[#FAF6EE] bg-[#7B1F1F] border-[2px] border-[#2B1A0E] px-5 py-3 shadow-[4px_4px_0px_#2B1A0E] hover:shadow-[2px_2px_0px_#2B1A0E] hover:translate-x-[2px] hover:translate-y-[2px] transition-all text-center"
-        >
-          ✦ Add New Pet
-        </Link>
+      <div className="mb-8 border-b-2 border-dashed border-[#C9922A] pb-4">
+        <h1 className="font-serif text-3xl font-black text-[#2B1A0E]">
+          My Adoption Requests
+        </h1>
+        <p className="font-mono text-sm text-[#7B4F2E] mt-1">
+          Track the status of the pets you want to bring home.
+        </p>
       </div>
 
-      {pets.length === 0 ? (
+      {requests.length === 0 ? (
         <div className="text-center py-12 bg-[#FDF6F2] border-[2px] border-[#2B1A0E]">
           <p className="font-mono text-[#7B4F2E] font-bold">
-            You haven't added any pets yet.
+            You haven't made any adoption requests yet.
           </p>
+          <Link
+            href="/all-pets"
+            className="inline-block mt-4 font-mono font-bold text-xs uppercase tracking-widest text-[#FAF6EE] bg-[#7B1F1F] border-[2px] border-[#2B1A0E] px-5 py-3 shadow-[4px_4px_0px_#2B1A0E] hover:shadow-[2px_2px_0px_#2B1A0E] hover:translate-x-[2px] hover:translate-y-[2px] transition-all"
+          >
+            ✦ Browse Pets
+          </Link>
         </div>
       ) : (
         <div className="overflow-x-auto border-[2px] border-[#2B1A0E]">
@@ -115,13 +109,10 @@ export default function MyListingsPage() {
             <thead>
               <tr className="bg-[#EAE2D3] border-b-[2px] border-[#2B1A0E]">
                 <th className="p-4 text-[#2B1A0E] font-bold uppercase tracking-wider text-xs">
-                  Pet
+                  Pet Name
                 </th>
                 <th className="p-4 text-[#2B1A0E] font-bold uppercase tracking-wider text-xs">
-                  Name
-                </th>
-                <th className="p-4 text-[#2B1A0E] font-bold uppercase tracking-wider text-xs">
-                  Species
+                  Pickup Date
                 </th>
                 <th className="p-4 text-[#2B1A0E] font-bold uppercase tracking-wider text-xs">
                   Status
@@ -132,41 +123,42 @@ export default function MyListingsPage() {
               </tr>
             </thead>
             <tbody>
-              {pets.map((pet) => (
+              {requests.map((req) => (
                 <tr
-                  key={pet._id}
+                  key={req._id}
                   className="border-b-[2px] border-[#2B1A0E] hover:bg-[#FDF6F2] transition-colors last:border-b-0"
                 >
-                  <td className="p-4">
-                    <img
-                      src={pet.image}
-                      alt={pet.name}
-                      className="w-12 h-12 rounded-full border-[2px] border-[#2B1A0E] object-cover bg-white"
-                    />
+                  <td className="p-4 font-bold text-[#2B1A0E]">
+                    {req.petName || "Unknown Pet"}
                   </td>
-                  <td className="p-4 font-bold text-[#2B1A0E]">{pet.name}</td>
-                  <td className="p-4 text-[#7B4F2E]">{pet.species}</td>
+                  <td className="p-4 text-[#7B4F2E]">
+                    {req.pickupDate || "Not Set"}
+                  </td>
                   <td className="p-4">
                     <span
-                      className={`px-3 py-1 text-[10px] font-bold uppercase tracking-widest border-[2px] border-[#2B1A0E] ${pet.adopted ? "bg-[#C9922A] text-white" : "bg-[#A7C957] text-[#2B1A0E]"}`}
+                      className={`px-3 py-1 text-[10px] font-bold uppercase tracking-widest border-[2px] border-[#2B1A0E] ${
+                        req.status === "approved"
+                          ? "bg-[#A7C957] text-[#2B1A0E]"
+                          : req.status === "rejected"
+                            ? "bg-[#7B1F1F] text-white"
+                            : "bg-[#C9922A] text-white"
+                      }`}
                     >
-                      {pet.adopted ? "Adopted" : "Available"}
+                      {req.status || "Pending"}
                     </span>
                   </td>
-                  <td className="p-4 flex gap-2 items-center h-full pt-6">
-                    {/* ✦ Edit বাটনকে Link এ পরিবর্তন করা হলো যেন নির্দিষ্ট ID সহ নতুন পেজে যায় ✦ */}
+                  <td className="p-4 flex gap-2 items-center">
                     <Link
-                      href={`/dashboard/update-pet/${pet._id}`}
+                      href={`/all-pets`}
                       className="bg-[#FAF6EE] text-[#2B1A0E] border-[2px] border-[#2B1A0E] px-4 py-1.5 text-xs font-bold hover:bg-[#C9922A] hover:text-white transition-colors"
                     >
-                      Edit
+                      View
                     </Link>
-                    {/* ✦ এখানে onClick ফাংশন আপডেট করা হলো ✦ */}
                     <button
-                      onClick={() => handleDeleteClick(pet._id)}
+                      onClick={() => handleCancelClick(req._id)}
                       className="bg-[#7B1F1F] text-[#FAF6EE] border-[2px] border-[#2B1A0E] px-4 py-1.5 text-xs font-bold hover:bg-red-800 transition-colors cursor-pointer"
                     >
-                      Delete
+                      Cancel
                     </button>
                   </td>
                 </tr>
@@ -176,29 +168,29 @@ export default function MyListingsPage() {
         </div>
       )}
 
-      {/* ✦ কাস্টম কনফার্মেশন মোডাল (Tailwind CSS) ✦ */}
+      {/* ✦ কাস্টম ক্যান্সেল কনফার্মেশন মোডাল ✦ */}
       {isModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#2B1A0E]/60 backdrop-blur-sm">
           <div className="bg-[#FAF6EE] border-[3px] border-[#2B1A0E] shadow-[8px_8px_0px_#2B1A0E] p-6 max-w-sm w-full mx-4">
             <h3 className="font-serif text-2xl font-black text-[#7B1F1F] mb-2">
-              Wait!
+              Cancel Request?
             </h3>
             <p className="font-mono text-sm text-[#2B1A0E] mb-6">
-              Are you absolutely sure you want to delete this pet? This action
-              cannot be undone.
+              Are you sure you want to withdraw your adoption request for this
+              pet?
             </p>
             <div className="flex gap-4 justify-end">
               <button
-                onClick={closeDeleteModal}
+                onClick={closeCancelModal}
                 className="font-mono text-xs font-bold uppercase tracking-widest text-[#2B1A0E] bg-[#EAE2D3] border-[2px] border-[#2B1A0E] px-4 py-2 hover:bg-[#D9CDB8] transition-colors cursor-pointer"
               >
-                Cancel
+                No, Keep It
               </button>
               <button
-                onClick={confirmDelete}
+                onClick={confirmCancel}
                 className="font-mono text-xs font-bold uppercase tracking-widest text-[#FAF6EE] bg-[#7B1F1F] border-[2px] border-[#2B1A0E] px-4 py-2 hover:bg-red-800 transition-colors shadow-[3px_3px_0px_#2B1A0E] hover:shadow-none hover:translate-x-[3px] hover:translate-y-[3px] cursor-pointer"
               >
-                Yes, Delete
+                Yes, Cancel
               </button>
             </div>
           </div>

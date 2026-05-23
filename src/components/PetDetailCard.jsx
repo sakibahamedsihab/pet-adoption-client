@@ -1,25 +1,38 @@
+"use client";
+
 import Image from "next/image";
-import Link from "next/link";
-// import PetDetailTopBar from "./PetDetailTopBar";
+import { useRouter } from "next/navigation";
+import { useSession } from "@/lib/auth-client";
+import { useState } from "react";
 
 export default function PetDetailCard({ pet }) {
+  const router = useRouter();
+  const { data: session } = useSession();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   const {
+    _id,
     petName,
-    breed = "Golden Retriever Mix",
-    type = "Dog",
-    age = "2 Years",
+    breed = "Unknown Breed",
+    species = "Unknown Species",
+    age = "Unknown Age",
     size = "Medium",
-    gender = "Male",
-    location = "Seattle, WA",
-    adoptionFee = 150,
+    gender = "Unknown",
+    location = "Unknown Location",
+    adoptionFee = 0,
     imageURL = "/placeholder.jpg",
     description = "",
-    healthTags = ["Vaccinated", "Neutered", "Microchipped", "House Trained"],
+    healthStatus,
+    vaccinationStatus,
+    ownerEmail, // মালিকানা চেক করার জন্য এটি দরকার
   } = pet ?? {};
+
+  // ডায়নামিক হেলথ ট্যাগ তৈরি করা হলো
+  const healthTags = [healthStatus, vaccinationStatus].filter(Boolean);
 
   const stats = [
     { icon: "🗓", label: "Age", value: age },
-    { icon: "⚖️", label: "Size", value: size },
+    { icon: "🐾", label: "Species", value: species },
     { icon: "♂", label: "Sex", value: gender },
     { icon: "📍", label: "Location", value: location },
   ];
@@ -30,24 +43,72 @@ export default function PetDetailCard({ pet }) {
   const labelClass =
     "font-mono text-[10px] font-bold text-[#7B1F1F] uppercase tracking-widest mb-1.5 block";
 
+  // ✦ রিকোয়েস্ট সাবমিট করার ফাংশন ✦
+  const handleAdoptSubmit = async (e) => {
+    e.preventDefault();
+
+    // ১. লগ-ইন চেক
+    if (!session) {
+      alert("Please login to submit an adoption request.");
+      return router.push("/login");
+    }
+
+    // ২. নিজের পেট কি না, সেটা চেক করা
+    if (session.user.email === ownerEmail) {
+      return alert("Oops! You cannot adopt your own pet! 🚫");
+    }
+
+    setIsSubmitting(true);
+    const formData = new FormData(e.target);
+
+    const requestData = {
+      petId: _id,
+      petName: petName,
+      userName: session.user.name,
+      email: session.user.email,
+      pickupDate: formData.get("meetDate"),
+      message: formData.get("message"),
+      status: "pending", // ডিফল্ট স্ট্যাটাস pending রাখা হলো
+    };
+
+    try {
+      const res = await fetch(
+        "https://pet-adoption-platform-server-8g3c.onrender.com/adoption-requests",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(requestData),
+        },
+      );
+
+      if (res.ok) {
+        alert("Adoption request submitted successfully! 🎉");
+        router.push("/dashboard/my-requests"); // সফল হলে My Requests পেজে পাঠিয়ে দেবে
+      } else {
+        alert("Failed to submit request.");
+      }
+    } catch (error) {
+      console.error("Error submitting request:", error);
+      alert("Something went wrong!");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-[#F5EDE0]">
       <div className="max-w-5xl mx-auto px-6 py-10">
-        {/* <PetDetailTopBar key={pet._id} pet={pet} /> */}
-
-        <div className="flex gap-8 items-start">
-          {/* LEFT */}
-          <div className="flex-1">
-            {/* Image */}
+        <div className="flex flex-col md:flex-row gap-8 items-start">
+          {/* LEFT SIDE - Pet Details */}
+          <div className="flex-1 w-full">
             <div className="relative border-[3px] border-[#2B1A0E] shadow-[8px_8px_0px_#2B1A0E] overflow-hidden h-[340px] mb-6">
               <Image
                 src={imageURL}
-                alt={petName}
+                alt={petName || "Pet"}
                 fill
                 className="object-cover"
                 priority
               />
-              {/* Badge */}
               <div className="absolute top-4 left-4 bg-[#C9922A] border-[2px] border-[#2B1A0E] px-3 py-1 shadow-[3px_3px_0px_#2B1A0E]">
                 <span className="font-mono text-[10px] font-bold text-[#2B1A0E] uppercase tracking-widest">
                   🐾 Looking for a home
@@ -55,7 +116,6 @@ export default function PetDetailCard({ pet }) {
               </div>
             </div>
 
-            {/* Name + Fee */}
             <div className="flex items-start justify-between mb-1">
               <h1 className="font-serif text-5xl font-black text-[#2B1A0E]">
                 {petName}
@@ -71,20 +131,19 @@ export default function PetDetailCard({ pet }) {
             </div>
 
             <p className="font-mono text-xs text-[#7B4F2E] uppercase tracking-widest mb-6">
-              {type} · {breed}
+              {species} · {breed}
             </p>
 
             <hr className="border-t-2 border-dashed border-[#C9922A] mb-6" />
 
-            {/* Stats */}
-            <div className="grid grid-cols-4 gap-3 mb-8">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-8">
               {stats.map(({ icon, label, value }) => (
                 <div
                   key={label}
                   className="bg-[#FAF6EE] border-[2px] border-[#2B1A0E] shadow-[4px_4px_0px_#2B1A0E] p-3 text-center"
                 >
                   <p className="text-lg mb-1">{icon}</p>
-                  <p className="font-serif text-sm font-black text-[#2B1A0E]">
+                  <p className="font-serif text-sm font-black text-[#2B1A0E] truncate">
                     {value}
                   </p>
                   <p className="font-mono text-[9px] text-[#7B4F2E] uppercase tracking-widest">
@@ -94,38 +153,38 @@ export default function PetDetailCard({ pet }) {
               ))}
             </div>
 
-            {/* Health & Vitals */}
-            <div className="mb-8">
-              <h2 className="font-serif text-xl font-black text-[#2B1A0E] mb-3">
-                Health & Vitals
-              </h2>
-              <div className="flex flex-wrap gap-2">
-                {healthTags.map((tag) => (
-                  <span
-                    key={tag}
-                    className="font-mono text-[10px] font-bold text-[#FAF6EE] bg-[#7B1F1F] border-[2px] border-[#2B1A0E] px-3 py-1 uppercase tracking-widest shadow-[2px_2px_0px_#2B1A0E]"
-                  >
-                    ✓ {tag}
-                  </span>
-                ))}
+            {healthTags.length > 0 && (
+              <div className="mb-8">
+                <h2 className="font-serif text-xl font-black text-[#2B1A0E] mb-3">
+                  Health & Vitals
+                </h2>
+                <div className="flex flex-wrap gap-2">
+                  {healthTags.map((tag) => (
+                    <span
+                      key={tag}
+                      className="font-mono text-[10px] font-bold text-[#FAF6EE] bg-[#7B1F1F] border-[2px] border-[#2B1A0E] px-3 py-1 uppercase tracking-widest shadow-[2px_2px_0px_#2B1A0E]"
+                    >
+                      ✓ {tag}
+                    </span>
+                  ))}
+                </div>
               </div>
-            </div>
+            )}
 
             <hr className="border-t-2 border-dashed border-[#C9922A] mb-6" />
 
-            {/* Meet section */}
             <div>
               <h2 className="font-serif text-2xl font-black text-[#2B1A0E] mb-3">
                 Meet {petName}
               </h2>
-              <p className="font-mono text-xs text-[#4A2E1A] leading-relaxed">
+              <p className="font-mono text-xs text-[#4A2E1A] leading-relaxed whitespace-pre-wrap">
                 {description}
               </p>
             </div>
           </div>
 
-          {/* RIGHT — Adoption Form */}
-          <div className="w-[280px] flex-shrink-0 sticky top-6">
+          {/* RIGHT SIDE — Adoption Form */}
+          <div className="w-full md:w-[320px] flex-shrink-0 md:sticky md:top-6">
             <div className="bg-[#FAF6EE] border-[3px] border-[#2B1A0E] shadow-[8px_8px_0px_#2B1A0E] p-6">
               <p className="font-mono text-[10px] text-[#7B4F2E] uppercase tracking-widest mb-1">
                 ✦ Adopt
@@ -139,31 +198,48 @@ export default function PetDetailCard({ pet }) {
 
               <hr className="border-t-2 border-dashed border-[#C9922A] mb-5" />
 
-              <form className="flex flex-col gap-4">
+              <form
+                onSubmit={handleAdoptSubmit}
+                className="flex flex-col gap-4"
+              >
+                {/* Pet Name - Read Only */}
+                <div>
+                  <label className={labelClass}>Pet Name</label>
+                  <input
+                    type="text"
+                    value={petName || ""}
+                    readOnly
+                    className={`${inputClass} bg-[#EAE2D3] cursor-not-allowed opacity-80`}
+                  />
+                </div>
+
+                {/* User Name - Read Only */}
                 <div>
                   <label className={labelClass}>Full Name</label>
                   <input
                     type="text"
-                    name="fullName"
-                    placeholder="Jane Doe"
-                    className={inputClass}
+                    value={session?.user?.name || ""}
+                    readOnly
+                    className={`${inputClass} bg-[#EAE2D3] cursor-not-allowed opacity-80`}
                     required
                   />
                 </div>
+
+                {/* User Email - Read Only */}
                 <div>
                   <label className={labelClass}>Email Address</label>
                   <input
                     type="email"
-                    name="email"
-                    placeholder="you@example.com"
-                    className={inputClass}
+                    value={session?.user?.email || ""}
+                    readOnly
+                    className={`${inputClass} bg-[#EAE2D3] cursor-not-allowed opacity-80`}
                     required
                   />
                 </div>
+
+                {/* Pickup Date */}
                 <div>
-                  <label className={labelClass}>
-                    Preferred Meet & Greet Date
-                  </label>
+                  <label className={labelClass}>Preferred Pickup Date</label>
                   <input
                     type="date"
                     name="meetDate"
@@ -171,6 +247,8 @@ export default function PetDetailCard({ pet }) {
                     required
                   />
                 </div>
+
+                {/* Message */}
                 <div>
                   <label className={labelClass}>Message to Shelter</label>
                   <textarea
@@ -178,14 +256,16 @@ export default function PetDetailCard({ pet }) {
                     rows={3}
                     placeholder="Tell us about your home environment..."
                     className={`${inputClass} resize-none`}
+                    required
                   />
                 </div>
 
                 <button
                   type="submit"
-                  className="w-full font-mono font-bold text-xs uppercase tracking-widest text-[#FAF6EE] bg-[#7B1F1F] border-[2px] border-[#2B1A0E] py-3 shadow-[5px_5px_0px_#2B1A0E] hover:shadow-[2px_2px_0px_#2B1A0E] hover:translate-x-[3px] hover:translate-y-[3px] transition-all duration-150 cursor-pointer"
+                  disabled={isSubmitting}
+                  className="w-full font-mono font-bold text-xs uppercase tracking-widest text-[#FAF6EE] bg-[#7B1F1F] border-[2px] border-[#2B1A0E] py-3 shadow-[5px_5px_0px_#2B1A0E] hover:shadow-[2px_2px_0px_#2B1A0E] hover:translate-x-[3px] hover:translate-y-[3px] transition-all duration-150 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  Submit Request ↗
+                  {isSubmitting ? "Submitting..." : "Submit Request ↗"}
                 </button>
 
                 <p className="font-mono text-[9px] text-[#A08060] text-center leading-relaxed">
