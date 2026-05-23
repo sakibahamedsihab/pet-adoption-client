@@ -7,12 +7,12 @@ import { AiFillHeart, AiOutlineHeart } from "react-icons/ai";
 
 // আমাদের তৈরি করা ক্লায়েন্ট কম্পোনেন্টগুলো ইমপোর্ট করছি
 import SearchFilter from "@/components/SearchFilter";
-import PetPagination from "@/components/PetPagination";
 import PetCard from "@/components/PetCard";
 
 const AllPetsPage = async ({ searchParams }) => {
-  const search = searchParams?.search || "";
-  const species = searchParams?.species || "";
+  const resolvedPromise = await searchParams;
+  const search = resolvedPromise?.search || "";
+  const species = resolvedPromise?.species || "";
 
   // data fetching
   const res = await fetch(
@@ -48,9 +48,6 @@ const AllPetsPage = async ({ searchParams }) => {
             <PetCard key={pet._id} pet={pet} />
           ))}
         </div>
-
-        {/* Pagination */}
-        <PetPagination totalPages={5} />
       </div>
     </div>
   );

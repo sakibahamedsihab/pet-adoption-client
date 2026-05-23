@@ -46,7 +46,7 @@ const PetCard = ({ pet }) => {
         {/* Updated Button */}
         <div className="mt-auto pt-4">
           <Link
-            href={`/pets/${_id}`}
+            href={`/all-pets/${_id}`}
             className="block w-full text-center font-mono font-bold text-xs uppercase tracking-widest text-[#FAF6EE] bg-[#7B1F1F] border-[2px] border-[#2B1A0E] py-3.5 shadow-[5px_5px_0px_#2B1A0E] hover:shadow-[2px_2px_0px_#2B1A0E] hover:translate-x-[3px] hover:translate-y-[3px] transition-all duration-150"
           >
             ✦ View Details
