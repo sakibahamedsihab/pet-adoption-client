@@ -13,11 +13,14 @@ const AddPetPage = () => {
     const data = Object.fromEntries(formData.entries());
     console.log(data);
 
-    const res = await fetch("http://localhost:5000/pets", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(data),
-    });
+    const res = await fetch(
+      "https://pet-adoption-platform-server-8g3c.onrender.com/pets",
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      },
+    );
 
     const result = await res.json();
     console.log(result);
