@@ -10,7 +10,12 @@ const PetCard = ({ pet }) => {
     <div className="bg-[#FAF6EE] border-[3px] border-[#2B1A0E] shadow-[8px_8px_0px_#2B1A0E] flex flex-col hover:-translate-y-1 hover:shadow-[12px_12px_0px_#2B1A0E] transition-all duration-200">
       {/* Image Container with Badge */}
       <div className="relative w-full h-52 border-b-[3px] border-[#2B1A0E] bg-[#2B1A0E] overflow-hidden">
-        <Image src={imageURL} alt={petName} fill className="object-cover" />
+        <Image
+          src={imageURL ? imageURL : ""}
+          alt={petName ? petName : "Not Found"}
+          fill
+          className="object-cover"
+        />
         {/* Species Badge */}
         <div className="absolute top-3 right-3 font-mono text-[10px] font-bold text-[#2B1A0E] uppercase tracking-widest bg-[#C9922A] border-[2px] border-[#2B1A0E] px-2 py-1 shadow-[2px_2px_0px_#2B1A0E]">
           {species}
