@@ -4,7 +4,7 @@ const nextConfig = {
     remotePatterns: [
       {
         protocol: "https",
-        hostname: "images.unsplash.com", // এখানে ডোমেইনের নাম বসবে
+        hostname: "images.unsplash.com",
       },
     ],
   },
