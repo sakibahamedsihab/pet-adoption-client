@@ -1,24 +1,40 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { signUp } from "@/lib/auth-client";
 
 const RegisterPage = () => {
+  const router = useRouter();
+
   async function handleRegister(event) {
     event.preventDefault();
     const formData = new FormData(event.currentTarget);
     const data = Object.fromEntries(formData);
-    if (data.password < 8 && data.password != data.confirmPassword) {
-      alert("password not match");
+
+    if (data.password.length < 8 || data.password !== data.confirmPassword) {
+      alert(
+        "Password must be at least 8 characters and match the confirm password.",
+      );
       return;
     }
-    const res = await fetch(
-      "https://pet-adoption-platform-server-8g3c.onrender.com/pets",
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
-      },
-    );
+
+    // Better Auth-এর signUp ফাংশন কল করা হচ্ছে
+    const { data: authData, error } = await signUp.email({
+      email: data.email,
+      password: data.password,
+      name: data.name,
+      image: data.photoURL || "",
+    });
+
+    if (error) {
+      alert(error.message); // কোনো এরর থাকলে অ্যালার্ট দেখাবে
+      return;
+    }
+
+    // রেজিস্ট্রেশন সফল হলে ড্যাশবোর্ডে বা লগ-ইন পেজে পাঠিয়ে দেবে
+    alert("Registration Successful!");
+    router.push("/");
   }
 
   const inputClass =

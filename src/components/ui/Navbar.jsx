@@ -2,16 +2,21 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Button } from "@heroui/react";
+import { useSession } from "@/lib/auth-client"; // Better Auth থেকে useSession ইমপোর্ট করা হলো
+import ProfileDropdown from "../ProfileDropdown"; // ProfileDropdown ইমপোর্ট করা হলো
 
 const Navbar = () => {
-  const user = true;
   const pathname = usePathname();
+
+  // ডাটাবেস থেকে আসল ইউজারের সেশন ডেটা নিয়ে আসা হচ্ছে
+  const { data: session } = useSession();
+  const user = session?.user; // ইউজার লগ-ইন না থাকলে এটি null/undefined হবে
 
   const navLinks = [
     { label: "Home", href: "/" },
     { label: "All Pets", href: "/all-pets" },
   ];
+
   if (user) {
     navLinks.push({ label: "My Requests", href: "/my-requests" });
   }
@@ -46,11 +51,16 @@ const Navbar = () => {
         {/* Auth Buttons */}
         <div className="flex items-center gap-3">
           {user ? (
-            <Link href="/add-pet">
-              <button className="font-mono font-bold text-xs uppercase tracking-widest text-[#FAF6EE] bg-[#7B1F1F] border-[2px] border-[#2B1A0E] px-5 py-2 shadow-[4px_4px_0px_#2B1A0E] hover:shadow-[2px_2px_0px_#2B1A0E] hover:translate-x-[2px] hover:translate-y-[2px] transition-all duration-150 cursor-pointer">
-                ✦ Add Pet
-              </button>
-            </Link>
+            <div className="flex items-center gap-4">
+              <Link href="/add-pet">
+                <button className="font-mono font-bold text-xs uppercase tracking-widest text-[#FAF6EE] bg-[#7B1F1F] border-[2px] border-[#2B1A0E] px-5 py-2 shadow-[4px_4px_0px_#2B1A0E] hover:shadow-[2px_2px_0px_#2B1A0E] hover:translate-x-[2px] hover:translate-y-[2px] transition-all duration-150 cursor-pointer">
+                  ✦ Add Pet
+                </button>
+              </Link>
+
+              {/* Props এর মাধ্যমে user ডেটা ProfileDropdown এ পাঠানো হলো */}
+              <ProfileDropdown user={user} />
+            </div>
           ) : (
             <>
               <Link href="/login">
