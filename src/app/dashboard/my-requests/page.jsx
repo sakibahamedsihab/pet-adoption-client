@@ -149,7 +149,7 @@ export default function MyRequestsPage() {
                   </td>
                   <td className="p-4 flex gap-2 items-center">
                     <Link
-                      href={`/all-pets`}
+                      href={`/all-pets/${req._id}`}
                       className="bg-[#FAF6EE] text-[#2B1A0E] border-[2px] border-[#2B1A0E] px-4 py-1.5 text-xs font-bold hover:bg-[#C9922A] hover:text-white transition-colors"
                     >
                       View

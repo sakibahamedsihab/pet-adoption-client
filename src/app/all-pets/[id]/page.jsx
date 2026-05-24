@@ -9,7 +9,7 @@ export default async function PetDetail({ params }) {
   const pet = await res.json();
   return (
     <div>
-      <PetDetailCard key={pet._id} pet={pet} />
+      <PetDetailCard pet={pet} />
     </div>
   );
 }

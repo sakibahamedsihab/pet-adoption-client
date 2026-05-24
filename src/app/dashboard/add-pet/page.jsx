@@ -12,6 +12,7 @@ export default function AddPetPage() {
     e.preventDefault();
     const formData = new FormData(e.target);
     const petData = Object.fromEntries(formData);
+    console.log(petData);
 
     // বাই ডিফল্ট adopted স্ট্যাটাস false রাখছি
     petData.adopted = false;
@@ -69,7 +70,7 @@ export default function AddPetPage() {
             <label className={labelClass}>Pet Name</label>
             <input
               type="text"
-              name="name"
+              name="petName"
               required
               className={inputClass}
               placeholder="e.g. Max"
@@ -126,7 +127,7 @@ export default function AddPetPage() {
             <label className={labelClass}>Image URL</label>
             <input
               type="url"
-              name="image"
+              name="imageURL"
               required
               className={inputClass}
               placeholder="https://i.ibb.co/..."
