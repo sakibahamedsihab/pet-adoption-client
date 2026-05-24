@@ -1,25 +1,29 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { useSession } from "@/lib/auth-client"; // Better Auth থেকে useSession ইমপোর্ট করা হলো
-import ProfileDropdown from "../ProfileDropdown"; // ProfileDropdown ইমপোর্ট করা হলো
+import { usePathname, useRouter } from "next/navigation";
+import { useSession, signOut } from "@/lib/auth-client";
+import ProfileDropdown from "../ProfileDropdown";
 
 const Navbar = () => {
   const pathname = usePathname();
+  const router = useRouter();
 
-  // ডাটাবেস থেকে আসল ইউজারের সেশন ডেটা নিয়ে আসা হচ্ছে
+  // ডাটাবেস থেকে আসল ইউজারের সেশন ডেটা নিয়ে আসা হচ্ছে
   const { data: session } = useSession();
-  const user = session?.user; // ইউজার লগ-ইন না থাকলে এটি null/undefined হবে
+  const user = session?.user;
 
+  // ✦ নেভবার একদম ক্লিন— শুধু মেইন পেজ দুটো রাখা হলো ✦
   const navLinks = [
     { label: "Home", href: "/" },
     { label: "All Pets", href: "/all-pets" },
   ];
 
-  if (user) {
-    navLinks.push({ label: "My Requests", href: "/my-requests" });
-  }
+  // লগআউট করার ফাংশন
+  const handleLogout = async () => {
+    await signOut();
+    router.push("/login");
+  };
 
   return (
     <header className="bg-[#FAF6EE] border-b-[3px] border-[#2B1A0E] z-10">
@@ -52,14 +56,16 @@ const Navbar = () => {
         <div className="flex items-center gap-3">
           {user ? (
             <div className="flex items-center gap-4">
-              <Link href="/add-pet">
-                <button className="font-mono font-bold text-xs uppercase tracking-widest text-[#FAF6EE] bg-[#7B1F1F] border-[2px] border-[#2B1A0E] px-5 py-2 shadow-[4px_4px_0px_#2B1A0E] hover:shadow-[2px_2px_0px_#2B1A0E] hover:translate-x-[2px] hover:translate-y-[2px] transition-all duration-150 cursor-pointer">
-                  ✦ Add Pet
-                </button>
-              </Link>
-
-              {/* Props এর মাধ্যমে user ডেটা ProfileDropdown এ পাঠানো হলো */}
+              {/* Profile Dropdown */}
               <ProfileDropdown user={user} />
+
+              {/* Logout Button */}
+              <button
+                onClick={handleLogout}
+                className="font-mono font-bold text-xs uppercase tracking-widest text-[#FAF6EE] bg-[#2B1A0E] border-[2px] border-[#2B1A0E] px-4 py-2 shadow-[3px_3px_0px_#C9922A] hover:shadow-[1px_1px_0px_#C9922A] hover:translate-x-[2px] hover:translate-y-[2px] transition-all duration-150 cursor-pointer"
+              >
+                Logout
+              </button>
             </div>
           ) : (
             <>

@@ -1,4 +1,4 @@
-"use server";
+// "use server";
 import PetCard from "./PetCard";
 
 export default async function FeaturedPets() {

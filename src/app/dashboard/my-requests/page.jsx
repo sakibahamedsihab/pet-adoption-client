@@ -125,7 +125,7 @@ export default function MyRequestsPage() {
             <tbody>
               {requests.map((req) => (
                 <tr
-                  key={req._id}
+                  key={req.petId}
                   className="border-b-[2px] border-[#2B1A0E] hover:bg-[#FDF6F2] transition-colors last:border-b-0"
                 >
                   <td className="p-4 font-bold text-[#2B1A0E]">
