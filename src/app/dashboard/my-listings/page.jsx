@@ -196,9 +196,9 @@ export default function MyListingsPage() {
                       <Image
                         src={
                           pet.imageURL ||
-                          "https://images.unsplash.com/photo-1543852786-1cf6624b9987?q=80&w=600&auto=format&fit=crop" 
+                          "https://images.unsplash.com/photo-1543852786-1cf6624b9987?q=80&w=600&auto=format&fit=crop"
                         }
-                        alt={pet.name}
+                        alt={pet.petName}
                         fill
                         className="object-cover"
                         sizes="48px"

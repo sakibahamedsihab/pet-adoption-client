@@ -14,12 +14,6 @@ export default function MyRequestsPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [requestToCancel, setRequestToCancel] = useState(null);
 
-  useEffect(() => {
-    if (session?.user?.email) {
-      fetchMyRequests();
-    }
-  }, [session]);
-
   const fetchMyRequests = async () => {
     try {
       const res = await fetch(
@@ -33,6 +27,12 @@ export default function MyRequestsPage() {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    if (session?.user?.email) {
+      fetchMyRequests();
+    }
+  }, [session]);
 
   const handleCancelClick = (id) => {
     setRequestToCancel(id);
@@ -149,7 +149,7 @@ export default function MyRequestsPage() {
                   </td>
                   <td className="p-4 flex gap-2 items-center">
                     <Link
-                      href={`/all-pets/${req._id}`}
+                      href={`/all-pets/${req.petId}`}
                       className="bg-[#FAF6EE] text-[#2B1A0E] border-[2px] border-[#2B1A0E] px-4 py-1.5 text-xs font-bold hover:bg-[#C9922A] hover:text-white transition-colors"
                     >
                       View
