@@ -3,19 +3,24 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { signUp } from "@/lib/auth-client";
+import { useState } from "react";
+import toast from "react-hot-toast"; // ✦ Toast ইমপোর্ট করা হলো ✦
 
 const RegisterPage = () => {
   const router = useRouter();
+  const [isSubmitting, setIsSubmitting] = useState(false); // ✦ লোডিং স্টেট ✦
 
   async function handleRegister(event) {
     event.preventDefault();
+    setIsSubmitting(true);
     const formData = new FormData(event.currentTarget);
     const data = Object.fromEntries(formData);
 
     if (data.password.length < 8 || data.password !== data.confirmPassword) {
-      alert(
+      toast.error(
         "Password must be at least 8 characters and match the confirm password.",
-      );
+      ); // ✦ Alert রিমুভ করে Toast ✦
+      setIsSubmitting(false);
       return;
     }
 
@@ -28,12 +33,13 @@ const RegisterPage = () => {
     });
 
     if (error) {
-      alert(error.message); // কোনো এরর থাকলে অ্যালার্ট দেখাবে
+      toast.error(error.message || "Failed to register!"); // ✦ Alert রিমুভ করে Toast ✦
+      setIsSubmitting(false);
       return;
     }
 
-    // রেজিস্ট্রেশন সফল হলে ড্যাশবোর্ডে বা লগ-ইন পেজে পাঠিয়ে দেবে
-    alert("Registration Successful!");
+    // রেজিস্ট্রেশন সফল হলে ড্যাশবোর্ডে বা লগ-ইন পেজে পাঠিয়ে দেবে
+    toast.success("Registration Successful! 🎉"); // ✦ Alert রিমুভ করে Toast ✦
     router.push("/");
   }
 
@@ -112,9 +118,10 @@ const RegisterPage = () => {
 
             <button
               type="submit"
-              className="w-full font-mono font-bold text-xs uppercase tracking-widest text-[#FAF6EE] bg-[#7B1F1F] border-[2px] border-[#2B1A0E] py-3 shadow-[5px_5px_0px_#2B1A0E] hover:shadow-[2px_2px_0px_#2B1A0E] hover:translate-x-[3px] hover:translate-y-[3px] transition-all duration-150 cursor-pointer"
+              disabled={isSubmitting}
+              className="w-full font-mono font-bold text-xs uppercase tracking-widest text-[#FAF6EE] bg-[#7B1F1F] border-[2px] border-[#2B1A0E] py-3 shadow-[5px_5px_0px_#2B1A0E] hover:shadow-[2px_2px_0px_#2B1A0E] hover:translate-x-[3px] hover:translate-y-[3px] transition-all duration-150 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              ✦ Create Account
+              {isSubmitting ? "Creating Account..." : "✦ Create Account"}
             </button>
           </form>
 

@@ -4,6 +4,7 @@
 import { useSession } from "@/lib/auth-client";
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import toast from "react-hot-toast"; // ✦ Toast ইমপোর্ট করা হলো ✦
 
 export default function MyRequestsPage() {
   const { data: session } = useSession();
@@ -56,15 +57,16 @@ export default function MyRequestsPage() {
       );
 
       if (res.ok) {
-        alert("Adoption request canceled! 🚫");
+        toast.success("Adoption request canceled! 🚫"); // ✦ Alert এর বদলে Toast ✦
         setRequests((prev) =>
           prev.filter((req) => req._id !== requestToCancel),
         );
       } else {
-        alert("Failed to cancel request.");
+        toast.error("Failed to cancel request."); // ✦ Alert এর বদলে Toast ✦
       }
     } catch (error) {
       console.error("Error canceling request:", error);
+      toast.error("Something went wrong!");
     } finally {
       closeCancelModal();
     }
@@ -111,6 +113,10 @@ export default function MyRequestsPage() {
                 <th className="p-4 text-[#2B1A0E] font-bold uppercase tracking-wider text-xs">
                   Pet Name
                 </th>
+                {/* ✦ Request Date কলাম যুক্ত করা হলো ✦ */}
+                <th className="p-4 text-[#2B1A0E] font-bold uppercase tracking-wider text-xs">
+                  Request Date
+                </th>
                 <th className="p-4 text-[#2B1A0E] font-bold uppercase tracking-wider text-xs">
                   Pickup Date
                 </th>
@@ -125,11 +131,15 @@ export default function MyRequestsPage() {
             <tbody>
               {requests.map((req) => (
                 <tr
-                  key={req.petId}
+                  key={req._id}
                   className="border-b-[2px] border-[#2B1A0E] hover:bg-[#FDF6F2] transition-colors last:border-b-0"
                 >
                   <td className="p-4 font-bold text-[#2B1A0E]">
                     {req.petName || "Unknown Pet"}
+                  </td>
+                  {/* ✦ Request Date এর ডেটা দেখানো হচ্ছে ✦ */}
+                  <td className="p-4 text-[#7B4F2E]">
+                    {req.requestDate || "N/A"}
                   </td>
                   <td className="p-4 text-[#7B4F2E]">
                     {req.pickupDate || "Not Set"}
@@ -168,7 +178,7 @@ export default function MyRequestsPage() {
         </div>
       )}
 
-      {/* ✦ কাস্টম ক্যান্সেল কনফার্মেশন মোডাল ✦ */}
+      {/* কাস্টম ক্যান্সেল কনফার্মেশন মোডাল */}
       {isModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#2B1A0E]/60 backdrop-blur-sm">
           <div className="bg-[#FAF6EE] border-[3px] border-[#2B1A0E] shadow-[8px_8px_0px_#2B1A0E] p-6 max-w-sm w-full mx-4">

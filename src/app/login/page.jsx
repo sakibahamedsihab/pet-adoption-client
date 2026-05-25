@@ -3,12 +3,18 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { signIn } from "@/lib/auth-client";
+import { useState } from "react";
+import toast from "react-hot-toast"; // ✦ Toast ইমপোর্ট করা হলো ✦
 
 const LoginPage = () => {
   const router = useRouter();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isGoogleSubmitting, setIsGoogleSubmitting] = useState(false);
 
   async function handleLogin(event) {
     event.preventDefault();
+    setIsSubmitting(true);
+
     const formData = new FormData(event.currentTarget);
     const data = Object.fromEntries(formData);
 
@@ -19,23 +25,27 @@ const LoginPage = () => {
     });
 
     if (error) {
-      alert(error.message);
+      toast.error(error.message || "Failed to login!"); // ✦ Alert রিমুভ করে Toast ✦
+      setIsSubmitting(false);
       return;
     }
 
+    toast.success("Logged in successfully! 🎉"); // ✦ Success Toast ✦
     // লগ-ইন সফল হলে হোম পেজ বা ড্যাশবোর্ডে রিডাইরেক্ট করবে
     router.push("/");
   }
 
-  // ✦ নতুন যোগ করা হলো: গুগল লগ-ইন ফাংশন ✦
+  // ✦ গুগল লগ-ইন ফাংশন ✦
   const handleGoogleLogin = async () => {
+    setIsGoogleSubmitting(true);
     const { data, error } = await signIn.social({
       provider: "google",
       callbackURL: "/", // লগ-ইন সফল হলে হোম পেজে রিডাইরেক্ট করবে
     });
 
     if (error) {
-      alert(error.message);
+      toast.error(error.message || "Google login failed!"); // ✦ Alert রিমুভ করে Toast ✦
+      setIsGoogleSubmitting(false);
     }
   };
 
@@ -96,16 +106,18 @@ const LoginPage = () => {
 
             <button
               type="submit"
-              className="w-full font-mono font-bold text-xs uppercase tracking-widest text-[#FAF6EE] bg-[#7B1F1F] border-[2px] border-[#2B1A0E] py-3 shadow-[5px_5px_0px_#2B1A0E] hover:shadow-[2px_2px_0px_#2B1A0E] hover:translate-x-[3px] hover:translate-y-[3px] transition-all duration-150 cursor-pointer"
+              disabled={isSubmitting || isGoogleSubmitting}
+              className="w-full font-mono font-bold text-xs uppercase tracking-widest text-[#FAF6EE] bg-[#7B1F1F] border-[2px] border-[#2B1A0E] py-3 shadow-[5px_5px_0px_#2B1A0E] hover:shadow-[2px_2px_0px_#2B1A0E] hover:translate-x-[3px] hover:translate-y-[3px] transition-all duration-150 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              ✦ Login
+              {isSubmitting ? "Logging in..." : "✦ Login"}
             </button>
 
-            {/* ✦ নতুন যোগ করা হলো: গুগল লগ-ইন বাটন ✦ */}
+            {/* ✦ গুগল লগ-ইন বাটন ✦ */}
             <button
               type="button"
               onClick={handleGoogleLogin}
-              className="w-full font-mono font-bold text-xs uppercase tracking-widest text-[#2B1A0E] bg-[#FAF6EE] border-[2px] border-[#2B1A0E] py-3 shadow-[5px_5px_0px_#2B1A0E] hover:shadow-[2px_2px_0px_#2B1A0E] hover:translate-x-[3px] hover:translate-y-[3px] transition-all duration-150 cursor-pointer flex items-center justify-center gap-2"
+              disabled={isSubmitting || isGoogleSubmitting}
+              className="w-full font-mono font-bold text-xs uppercase tracking-widest text-[#2B1A0E] bg-[#FAF6EE] border-[2px] border-[#2B1A0E] py-3 shadow-[5px_5px_0px_#2B1A0E] hover:shadow-[2px_2px_0px_#2B1A0E] hover:translate-x-[3px] hover:translate-y-[3px] transition-all duration-150 cursor-pointer flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <svg className="w-4 h-4" viewBox="0 0 24 24">
                 <path
@@ -125,7 +137,7 @@ const LoginPage = () => {
                   d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
                 />
               </svg>
-              Continue with Google
+              {isGoogleSubmitting ? "Connecting..." : "Continue with Google"}
             </button>
           </form>
 

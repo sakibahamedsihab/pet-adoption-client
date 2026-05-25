@@ -1,9 +1,9 @@
-// src/app/dashboard/update-pet/[id]/page.jsx
 "use client";
 
 import { useSession } from "@/lib/auth-client";
 import { useRouter, useParams } from "next/navigation";
 import { useEffect, useState } from "react";
+import toast from "react-hot-toast"; // ✦ Toast ইমপোর্ট করা হলো ✦
 
 export default function UpdatePetPage() {
   const { data: session } = useSession();
@@ -11,8 +11,9 @@ export default function UpdatePetPage() {
   const params = useParams();
   const [petData, setPetData] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [isSubmitting, setIsSubmitting] = useState(false); // ✦ সাবমিট লোডিং স্টেট ✦
 
-  // পেজ লোড হলেই পেটের আগের ডেটা সার্ভার থেকে নিয়ে আসা
+  // পেজ লোড হলেই পেটের আগের ডেটা সার্ভার থেকে নিয়ে আসা
   useEffect(() => {
     const fetchSinglePet = async () => {
       try {
@@ -34,6 +35,8 @@ export default function UpdatePetPage() {
 
   const handleUpdatePet = async (e) => {
     e.preventDefault();
+    setIsSubmitting(true);
+
     const formData = new FormData(e.target);
     const updatedData = Object.fromEntries(formData);
 
@@ -51,13 +54,16 @@ export default function UpdatePetPage() {
       );
 
       if (response.ok) {
-        alert("Pet updated successfully! 🐾");
+        toast.success("Pet updated successfully! 🐾"); // ✦ Alert এর বদলে Toast ✦
         router.push("/dashboard/my-listings"); // আপডেট শেষে My Listings এ ফেরত যাবে
       } else {
-        alert("Failed to update pet details.");
+        toast.error("Failed to update pet details."); // ✦ Alert এর বদলে Toast ✦
       }
     } catch (error) {
       console.error("Error updating pet:", error);
+      toast.error("Something went wrong!"); // ✦ Alert এর বদলে Toast ✦
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -93,7 +99,7 @@ export default function UpdatePetPage() {
         </p>
       </div>
 
-      {/* ✦ Update Form (Add Pet ফর্মের মতোই, শুধু defaultValue বসানো) ✦ */}
+      {/* ✦ Update Form ✦ */}
       <form onSubmit={handleUpdatePet} className="flex flex-col gap-6">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
@@ -101,7 +107,7 @@ export default function UpdatePetPage() {
             <input
               type="text"
               name="name"
-              defaultValue={petData.name}
+              defaultValue={petData.name || petData.petName}
               required
               className={inputClass}
             />
@@ -163,8 +169,8 @@ export default function UpdatePetPage() {
             <label className={labelClass}>Image URL</label>
             <input
               type="url"
-              name="image"
-              defaultValue={petData.image}
+              name="imageURL"
+              defaultValue={petData.image || petData.imageURL}
               required
               className={inputClass}
             />
@@ -215,8 +221,8 @@ export default function UpdatePetPage() {
             <label className={labelClass}>Adoption Fee ($)</label>
             <input
               type="number"
-              name="fee"
-              defaultValue={petData.fee}
+              name="adoptionFee"
+              defaultValue={petData.fee || petData.adoptionFee}
               required
               className={inputClass}
               min="0"
@@ -248,9 +254,10 @@ export default function UpdatePetPage() {
 
         <button
           type="submit"
-          className="w-full mt-4 font-mono font-bold text-sm uppercase tracking-widest text-[#FAF6EE] bg-[#C9922A] border-[2px] border-[#2B1A0E] py-4 shadow-[5px_5px_0px_#2B1A0E] hover:shadow-[2px_2px_0px_#2B1A0E] hover:translate-x-[3px] hover:translate-y-[3px] transition-all duration-150 cursor-pointer"
+          disabled={isSubmitting}
+          className="w-full mt-4 font-mono font-bold text-sm uppercase tracking-widest text-[#FAF6EE] bg-[#C9922A] border-[2px] border-[#2B1A0E] py-4 shadow-[5px_5px_0px_#2B1A0E] hover:shadow-[2px_2px_0px_#2B1A0E] hover:translate-x-[3px] hover:translate-y-[3px] transition-all duration-150 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          ✦ Save Changes ✦
+          {isSubmitting ? "Saving..." : "✦ Save Changes ✦"}
         </button>
       </form>
     </div>

@@ -4,14 +4,14 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useSession } from "@/lib/auth-client";
 import { useState } from "react";
-import toast from "react-hot-toast";
+import toast from "react-hot-toast"; // ✦ অ্যালার্টের বদলে টোস্ট ব্যবহার ✦
 import Link from "next/link";
 
 export default function PetDetailCard({ pet }) {
   const router = useRouter();
   const { data: session } = useSession();
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false); // ✦ ডিলিট মোডালের স্টেট ✦
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
   const {
     _id,
@@ -27,7 +27,7 @@ export default function PetDetailCard({ pet }) {
     description = "",
     healthStatus,
     vaccinationStatus,
-    ownerEmail, // মালিকানা চেক করার জন্য
+    ownerEmail, // ✦ ডাটাবেস থেকে আসা ওনারের ইমেইল ✦
   } = pet ?? {};
 
   const healthTags = [healthStatus, vaccinationStatus].filter(Boolean);
@@ -44,7 +44,7 @@ export default function PetDetailCard({ pet }) {
   const labelClass =
     "font-mono text-[10px] font-bold text-[#7B1F1F] uppercase tracking-widest mb-1.5 block";
 
-  // ✦ পেট ডিলিট করার ফাংশন ✦
+  // পেট ডিলিট করার ফাংশন
   const confirmDelete = async () => {
     try {
       const res = await fetch(
@@ -53,7 +53,7 @@ export default function PetDetailCard({ pet }) {
       );
       if (res.ok) {
         toast.success("Pet deleted successfully! 🗑️");
-        router.push("/all-pets"); // ডিলিট হলে All Pets পেজে পাঠিয়ে দেবে
+        router.push("/all-pets");
       } else {
         toast.error("Failed to delete pet.");
       }
@@ -65,7 +65,7 @@ export default function PetDetailCard({ pet }) {
     }
   };
 
-  // ✦ রিকোয়েস্ট সাবমিট করার ফাংশন ✦
+  // রিকোয়েস্ট সাবমিট করার ফাংশন
   const handleAdoptSubmit = async (e) => {
     e.preventDefault();
 
@@ -74,6 +74,7 @@ export default function PetDetailCard({ pet }) {
       return router.push("/login");
     }
 
+    // ✦ সাবমিট করার সময়ও ব্যাকআপ সিকিউরিটি চেক ✦
     if (session.user.email === ownerEmail) {
       return toast.error("Oops! You cannot adopt your own pet! 🚫");
     }
@@ -89,7 +90,7 @@ export default function PetDetailCard({ pet }) {
       pickupDate: formData.get("meetDate"),
       message: formData.get("message"),
       status: "pending",
-      requestDate: new Date().toLocaleDateString(), // My Requests টেবিলে দেখানোর জন্য Date
+      requestDate: new Date().toLocaleDateString(), // টেবিলে দেখানোর জন্য ফর্ম্যাটেড ডেট
     };
 
     try {
@@ -119,7 +120,7 @@ export default function PetDetailCard({ pet }) {
   return (
     <div className="min-h-screen bg-[#F5EDE0]">
       <div className="max-w-5xl mx-auto px-6 py-10">
-        {/* ✦ TOP ACTION BAR: Back, Edit, Delete Buttons ✦ */}
+        {/* TOP ACTION BAR */}
         <div className="flex flex-wrap items-center justify-between gap-4 mb-8 border-b-2 border-dashed border-[#C9922A] pb-4">
           <Link
             href="/all-pets"
@@ -128,7 +129,7 @@ export default function PetDetailCard({ pet }) {
             ← Back to All Pets
           </Link>
 
-          {/* শুধু ওনার (Owner) হলেই Edit এবং Delete বাটন দেখা যাবে */}
+          {/* শুধু ওনার হলেই Edit এবং Delete বাটন দেখা যাবে */}
           {session?.user?.email === ownerEmail && (
             <div className="flex gap-3">
               <Link
@@ -149,7 +150,7 @@ export default function PetDetailCard({ pet }) {
 
         <div className="flex flex-col md:flex-row gap-8 items-start">
           {/* LEFT SIDE - Pet Details */}
-          <div className="flex-1 w-full">
+          <div className="w-full flex-1">
             <div className="relative border-[3px] border-[#2B1A0E] shadow-[8px_8px_0px_#2B1A0E] overflow-hidden h-[340px] mb-6">
               <Image
                 src={imageURL}
@@ -165,7 +166,7 @@ export default function PetDetailCard({ pet }) {
               </div>
             </div>
 
-            <div className="flex items-start justify-between mb-1">
+            <div className="mb-1 flex items-start justify-between">
               <h1 className="font-serif text-5xl font-black text-[#2B1A0E]">
                 {petName}
               </h1>
@@ -185,7 +186,7 @@ export default function PetDetailCard({ pet }) {
 
             <hr className="border-t-2 border-dashed border-[#C9922A] mb-6" />
 
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-8">
+            <div className="mb-8 grid grid-cols-2 md:grid-cols-4 gap-3">
               {stats.map(({ icon, label, value }) => (
                 <div
                   key={label}
@@ -232,23 +233,24 @@ export default function PetDetailCard({ pet }) {
             </div>
           </div>
 
-          {/* RIGHT SIDE — Adoption Form & Owner Notice */}
+          {/* RIGHT SIDE — Adoption Form OR Owner Notice */}
           <div className="w-full md:w-[320px] flex-shrink-0 md:sticky md:top-6">
             <div className="bg-[#FAF6EE] border-[3px] border-[#2B1A0E] shadow-[8px_8px_0px_#2B1A0E] p-6">
-              {/* ✦ নিজের পেট হলে ফর্ম হাইড করার লজিক ✦ */}
+              {/* ✦ ওনার চেক লজিক: লগ-ইন করা ইউজারের ইমেইল যদি ওনারের ইমেইলের সমান হয় ✦ */}
               {session?.user?.email === ownerEmail ? (
                 <div className="text-center py-4">
                   <h3 className="font-serif text-xl font-black text-[#7B1F1F] mb-2">
                     Your Listing
                   </h3>
-                  <p className="font-mono text-xs text-[#7B4F2E] mb-6">
-                    You cannot submit an adoption request for your own pet.
+                  <p className="font-mono text-xs text-[#7B4F2E] mb-6 leading-relaxed">
+                    You are the owner of this pet listing. Submitting adoption
+                    requests for your own pet is restricted.
                   </p>
                   <Link
                     href="/dashboard/my-listings"
-                    className="block w-full font-mono font-bold text-xs uppercase tracking-widest text-[#FAF6EE] bg-[#C9922A] border-[2px] border-[#2B1A0E] py-3 shadow-[5px_5px_0px_#2B1A0E] hover:shadow-[2px_2px_0px_#2B1A0E] hover:translate-x-[3px] hover:translate-y-[3px] transition-all duration-150"
+                    className="block w-full font-mono font-bold text-xs uppercase tracking-widest text-[#FAF6EE] bg-[#C9922A] border-[2px] border-[#2B1A0E] py-3 shadow-[5px_5px_0px_#2B1A0E] hover:shadow-[2px_2px_0px_#2B1A0E] hover:translate-x-[3px] hover:translate-y-[3px] transition-all duration-150 text-center"
                   >
-                    Manage Listing
+                    Manage Listings ↗
                   </Link>
                 </div>
               ) : (
@@ -331,11 +333,6 @@ export default function PetDetailCard({ pet }) {
                     >
                       {isSubmitting ? "Submitting..." : "Submit Request ↗"}
                     </button>
-
-                    <p className="font-mono text-[9px] text-[#A08060] text-center leading-relaxed">
-                      Submitting a request does not guarantee adoption. The
-                      shelter will contact you to proceed.
-                    </p>
                   </form>
                 </>
               )}
@@ -344,10 +341,10 @@ export default function PetDetailCard({ pet }) {
         </div>
       </div>
 
-      {/* ✦ কাস্টম ডিলিট কনফার্মেশন মোডাল ✦ */}
+      {/* DELETE MODAL */}
       {isDeleteModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#2B1A0E]/60 backdrop-blur-sm">
-          <div className="bg-[#FAF6EE] border-[3px] border-[#2B1A0E] shadow-[8px_8px_0px_#2B1A0E] p-6 max-w-sm w-full mx-4">
+          <div className="w-full max-w-sm mx-4 bg-[#FAF6EE] border-[3px] border-[#2B1A0E] shadow-[8px_8px_0px_#2B1A0E] p-6">
             <h3 className="font-serif text-2xl font-black text-[#7B1F1F] mb-2">
               Wait!
             </h3>
@@ -358,13 +355,13 @@ export default function PetDetailCard({ pet }) {
             <div className="flex gap-4 justify-end">
               <button
                 onClick={() => setIsDeleteModalOpen(false)}
-                className="font-mono text-xs font-bold uppercase tracking-widest text-[#2B1A0E] bg-[#EAE2D3] border-2 border-[#2B1A0E] px-4 py-2 hover:bg-[#D9CDB8] cursor-pointer"
+                className="font-mono text-xs font-bold uppercase tracking-widest text-[#2B1A0E] bg-[#EAE2D3] border-2 border-[#2B1A0E] px-4 py-2 hover:bg-[#D9CDB8]"
               >
                 Cancel
               </button>
               <button
                 onClick={confirmDelete}
-                className="font-mono text-xs font-bold uppercase tracking-widest text-[#FAF6EE] bg-[#7B1F1F] border-2 border-[#2B1A0E] px-4 py-2 hover:bg-red-800 shadow-[3px_3px_0px_#2B1A0E] hover:shadow-none hover:translate-x-0.75 hover:translate-y-0.75 cursor-pointer"
+                className="font-mono text-xs font-bold uppercase tracking-widest text-[#FAF6EE] bg-[#7B1F1F] border-2 border-[#2B1A0E] px-4 py-2 shadow-[3px_3px_0px_#2B1A0E] hover:shadow-none hover:translate-x-0.75 hover:translate-y-0.75"
               >
                 Yes, Delete
               </button>

@@ -1,18 +1,21 @@
-// src/app/dashboard/add-pet/page.jsx
 "use client";
 
 import { useSession } from "@/lib/auth-client";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
+import toast from "react-hot-toast"; // ✦ Toast ইমপোর্ট করা হলো ✦
 
 export default function AddPetPage() {
   const { data: session } = useSession();
   const router = useRouter();
+  const [isSubmitting, setIsSubmitting] = useState(false); // ✦ লোডিং স্টেট ✦
 
   const handleAddPet = async (e) => {
     e.preventDefault();
+    setIsSubmitting(true);
+
     const formData = new FormData(e.target);
     const petData = Object.fromEntries(formData);
-    console.log(petData);
 
     // বাই ডিফল্ট adopted স্ট্যাটাস false রাখছি
     petData.adopted = false;
@@ -32,17 +35,17 @@ export default function AddPetPage() {
       );
 
       if (response.ok) {
-        alert("Pet added successfully! 🐾");
-        e.target.reset(); // ফর্ম ক্লিয়ার করে দেবে
+        toast.success("Pet added successfully! 🐾"); // ✦ Alert এর বদলে Toast ✦
+        e.target.reset(); // ফর্ম ক্লিয়ার করে দেবে
         router.push("/dashboard/my-listings"); // সফল হলে My Listings পেজে রিডাইরেক্ট করবে
       } else {
-        alert("Failed to add pet. Please try again.");
+        toast.error("Failed to add pet. Please try again."); // ✦ Alert এর বদলে Toast ✦
       }
     } catch (error) {
       console.error("Error connecting to server:", error);
-      alert(
-        "Cannot connect to the server. Make sure your Express server is running!",
-      );
+      toast.error("Cannot connect to the server!"); // ✦ Alert এর বদলে Toast ✦
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -171,7 +174,7 @@ export default function AddPetPage() {
             <label className={labelClass}>Adoption Fee ($)</label>
             <input
               type="number"
-              name="fee"
+              name="adoptionFee"
               required
               className={inputClass}
               placeholder="0 for free"
@@ -207,9 +210,10 @@ export default function AddPetPage() {
         {/* Submit Button */}
         <button
           type="submit"
-          className="w-full mt-4 font-mono font-bold text-sm uppercase tracking-widest text-[#FAF6EE] bg-[#7B1F1F] border-[2px] border-[#2B1A0E] py-4 shadow-[5px_5px_0px_#2B1A0E] hover:shadow-[2px_2px_0px_#2B1A0E] hover:translate-x-[3px] hover:translate-y-[3px] transition-all duration-150 cursor-pointer"
+          disabled={isSubmitting}
+          className="w-full mt-4 font-mono font-bold text-sm uppercase tracking-widest text-[#FAF6EE] bg-[#7B1F1F] border-[2px] border-[#2B1A0E] py-4 shadow-[5px_5px_0px_#2B1A0E] hover:shadow-[2px_2px_0px_#2B1A0E] hover:translate-x-[3px] hover:translate-y-[3px] transition-all duration-150 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          ✦ Submit Pet Details ✦
+          {isSubmitting ? "Processing..." : "✦ Submit Pet Details ✦"}
         </button>
       </form>
     </div>

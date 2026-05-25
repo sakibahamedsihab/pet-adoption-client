@@ -1,10 +1,10 @@
-// src/app/dashboard/my-listings/page.jsx
 "use client";
 
 import { useSession } from "@/lib/auth-client";
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import toast from "react-hot-toast"; // ✦ Toast ইমপোর্ট করা হলো ✦
 
 export default function MyListingsPage() {
   const { data: session } = useSession();
@@ -15,7 +15,7 @@ export default function MyListingsPage() {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [petToDelete, setPetToDelete] = useState(null);
 
-  // ✦ রিকোয়েস্ট মোডালের স্টেট ✦
+  // ✦ রিকোয়েস্ট মোডালের স্টেট ✦
   const [isRequestsModalOpen, setIsRequestsModalOpen] = useState(false);
   const [selectedPet, setSelectedPet] = useState(null);
   const [petRequests, setPetRequests] = useState([]);
@@ -60,11 +60,14 @@ export default function MyListingsPage() {
         { method: "DELETE" },
       );
       if (res.ok) {
-        alert("Pet deleted successfully! 🗑️");
+        toast.success("Pet deleted successfully! 🗑️"); // ✦ Alert এর বদলে Toast ✦
         setPets((prev) => prev.filter((pet) => pet._id !== petToDelete));
+      } else {
+        toast.error("Failed to delete pet.");
       }
     } catch (error) {
       console.error("Error deleting pet:", error);
+      toast.error("Something went wrong!");
     } finally {
       closeDeleteModal();
     }
@@ -77,7 +80,7 @@ export default function MyListingsPage() {
     setRequestsLoading(true);
 
     try {
-      // ব্যাকএন্ড থেকে নির্দিষ্ট petId দিয়ে রিকোয়েস্টগুলো আনছি
+      // ব্যাকএন্ড থেকে নির্দিষ্ট petId দিয়ে রিকোয়েস্টগুলো আনছি
       const res = await fetch(
         `https://pet-adoption-platform-server-8g3c.onrender.com/adoption-requests?petId=${pet._id}`,
       );
@@ -109,25 +112,33 @@ export default function MyListingsPage() {
       );
 
       if (res.ok) {
-        alert(`Request ${newStatus} successfully!`);
-        // লোকাল স্টেট আপডেট করা যেন সাথে সাথে পরিবর্তন দেখা যায়
+        toast.success(`Request ${newStatus} successfully!`); // ✦ Alert এর বদলে Toast ✦
+
+        // লোকাল স্টেট আপডেট করা যেন সাথে সাথে পরিবর্তন দেখা যায়
         setPetRequests((prev) =>
           prev.map((req) =>
             req._id === requestId ? { ...req, status: newStatus } : req,
           ),
         );
 
-        // যদি Approve হয়, তবে পেটের স্ট্যাটাস Adopted করে দেওয়া
+        // যদি Approve হয়, তবে পেটের স্ট্যাটাস Adopted করে দেওয়া
         if (newStatus === "approved") {
           setPets((prev) =>
             prev.map((p) =>
               p._id === selectedPet._id ? { ...p, adopted: true } : p,
             ),
           );
+
+          // অ্যাপ্রুভ হয়ে গেলে মোডালের selectedPet এর adopted স্টেটও ট্রু করে দিচ্ছি
+          // যেন বাকি বাটনগুলো সাথে সাথে ডিজেবল হয়ে যায়
+          setSelectedPet((prev) => ({ ...prev, adopted: true }));
         }
+      } else {
+        toast.error("Action failed. Please try again.");
       }
     } catch (error) {
       console.error(`Error updating request status:`, error);
+      toast.error("Something went wrong!");
     }
   };
 
@@ -196,16 +207,19 @@ export default function MyListingsPage() {
                       <Image
                         src={
                           pet.imageURL ||
+                          pet.image ||
                           "https://images.unsplash.com/photo-1543852786-1cf6624b9987?q=80&w=600&auto=format&fit=crop"
                         }
-                        alt={pet.petName}
+                        alt={pet.petName || pet.name || "Pet"}
                         fill
                         className="object-cover"
                         sizes="48px"
                       />
                     </div>
                   </td>
-                  <td className="p-4 font-bold text-[#2B1A0E]">{pet.name}</td>
+                  <td className="p-4 font-bold text-[#2B1A0E]">
+                    {pet.name || pet.petName}
+                  </td>
                   <td className="p-4">
                     <span
                       className={`px-3 py-1 text-[10px] font-bold uppercase tracking-widest border-[2px] border-[#2B1A0E] ${pet.adopted ? "bg-[#C9922A] text-white" : "bg-[#A7C957] text-[#2B1A0E]"}`}
@@ -270,7 +284,7 @@ export default function MyListingsPage() {
         </div>
       )}
 
-      {/* ✦ Requests Modal (পিডিএফের রিকয়ারমেন্ট অনুযায়ী) ✦ */}
+      {/* ✦ Requests Modal ✦ */}
       {isRequestsModalOpen && selectedPet && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#2B1A0E]/60 backdrop-blur-sm">
           <div className="bg-[#FAF6EE] border-[3px] border-[#2B1A0E] shadow-[8px_8px_0px_#2B1A0E] p-6 max-w-2xl w-full mx-4 max-h-[80vh] overflow-y-auto">
@@ -280,7 +294,10 @@ export default function MyListingsPage() {
                   Adoption Requests
                 </h3>
                 <p className="font-mono text-xs text-[#7B4F2E] mt-1">
-                  For: <span className="font-bold">{selectedPet.name}</span>
+                  For:{" "}
+                  <span className="font-bold">
+                    {selectedPet.name || selectedPet.petName}
+                  </span>
                 </p>
               </div>
               <button
@@ -330,7 +347,7 @@ export default function MyListingsPage() {
                             onClick={() =>
                               handleRequestAction(req._id, "approved")
                             }
-                            disabled={selectedPet.adopted} // যদি পেটটি আগেই অ্যাপ্রুভড হয়ে যায়, তবে আর কাউকে অ্যাপ্রুভ করা যাবে না
+                            disabled={selectedPet.adopted} // যদি পেটটি আগেই অ্যাপ্রুভড হয়ে যায়, তবে ডিজেবল থাকবে
                             className="bg-[#A7C957] text-[#2B1A0E] border-[2px] border-[#2B1A0E] px-3 py-1.5 text-xs font-bold uppercase tracking-widest hover:bg-[#8da84a] cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
                           >
                             Approve
@@ -339,7 +356,8 @@ export default function MyListingsPage() {
                             onClick={() =>
                               handleRequestAction(req._id, "rejected")
                             }
-                            className="bg-[#7B1F1F] text-[#FAF6EE] border-[2px] border-[#2B1A0E] px-3 py-1.5 text-xs font-bold uppercase tracking-widest hover:bg-red-800 cursor-pointer"
+                            disabled={selectedPet.adopted} // পেটটি অ্যাপ্রুভড হয়ে গেলে রিজেক্ট বাটনও ডিজেবল থাকবে
+                            className="bg-[#7B1F1F] text-[#FAF6EE] border-[2px] border-[#2B1A0E] px-3 py-1.5 text-xs font-bold uppercase tracking-widest hover:bg-red-800 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
                           >
                             Reject
                           </button>
