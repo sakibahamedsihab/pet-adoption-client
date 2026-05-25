@@ -4,11 +4,11 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { signUp } from "@/lib/auth-client";
 import { useState } from "react";
-import toast from "react-hot-toast"; // ✦ Toast ইমপোর্ট করা হলো ✦
+import toast from "react-hot-toast";
 
 const RegisterPage = () => {
   const router = useRouter();
-  const [isSubmitting, setIsSubmitting] = useState(false); // ✦ লোডিং স্টেট ✦
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   async function handleRegister(event) {
     event.preventDefault();
@@ -16,10 +16,27 @@ const RegisterPage = () => {
     const formData = new FormData(event.currentTarget);
     const data = Object.fromEntries(formData);
 
-    if (data.password.length < 8 || data.password !== data.confirmPassword) {
-      toast.error(
-        "Password must be at least 8 characters and match the confirm password.",
-      ); // ✦ Alert রিমুভ করে Toast ✦
+    const password = data.password;
+    const confirmPassword = data.confirmPassword;
+
+    // ✦ পিডিএফ অনুযায়ী পাসওয়ার্ড ভ্যালিডেশন (Regex) ✦
+    if (password.length < 6) {
+      toast.error("Password must be at least 6 characters long.");
+      setIsSubmitting(false);
+      return;
+    }
+    if (!/(?=.*[A-Z])/.test(password)) {
+      toast.error("Password must contain at least one uppercase letter (A-Z).");
+      setIsSubmitting(false);
+      return;
+    }
+    if (!/(?=.*[a-z])/.test(password)) {
+      toast.error("Password must contain at least one lowercase letter (a-z).");
+      setIsSubmitting(false);
+      return;
+    }
+    if (password !== confirmPassword) {
+      toast.error("Passwords do not match.");
       setIsSubmitting(false);
       return;
     }
@@ -33,13 +50,13 @@ const RegisterPage = () => {
     });
 
     if (error) {
-      toast.error(error.message || "Failed to register!"); // ✦ Alert রিমুভ করে Toast ✦
+      toast.error(error.message || "Failed to register!");
       setIsSubmitting(false);
       return;
     }
 
-    // রেজিস্ট্রেশন সফল হলে ড্যাশবোর্ডে বা লগ-ইন পেজে পাঠিয়ে দেবে
-    toast.success("Registration Successful! 🎉"); // ✦ Alert রিমুভ করে Toast ✦
+    // রেজিস্ট্রেশন সফল হলে হোম পেজে পাঠিয়ে দেবে
+    toast.success("Registration Successful! 🎉");
     router.push("/");
   }
 
