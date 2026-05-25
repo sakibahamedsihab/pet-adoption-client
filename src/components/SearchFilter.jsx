@@ -1,7 +1,6 @@
 "use client";
 
 import { FiSearch } from "react-icons/fi";
-import { HiOutlineAdjustmentsHorizontal } from "react-icons/hi2";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
 
 const SearchFilter = () => {
@@ -28,14 +27,14 @@ const SearchFilter = () => {
 
   return (
     <div className="bg-[#FAF8F5] border-[3px] border-[#2B1A0E] shadow-[8px_8px_0px_#2B1A0E] p-6 mb-16">
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6 items-center">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-center">
         {/* সার্চ বার */}
         <div className="relative md:col-span-2">
           <input
             type="text"
             placeholder="Search by name..."
             className={`${inputClass} pl-12 rounded-full border-none bg-white text-base`}
-            defaultValue={searchParams.get("search")?.toString()}
+            defaultValue={searchParams.get("search")?.toString() || ""}
             onChange={(e) => handleFilterChange(e.target.value, "search")} // টাইপ করলেই URL চেঞ্জ হবে
           />
           <FiSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-2xl text-[#2B1A0E]" />
@@ -55,20 +54,6 @@ const SearchFilter = () => {
             <option value="Bird">Bird</option>
             <option value="Rabbit">Rabbit</option>
           </select>
-        </div>
-
-        {/* সর্টিং (আপাতত আগের মতোই থাকুক) */}
-        <div>
-          <label className={labelClass}>Sort By</label>
-          <div className="relative">
-            <select className={`${inputClass} rounded-full`}>
-              <option value="Newest Arrivals">Newest Arrivals</option>
-              <option value="Adoption Fee: Low to High">
-                Fee: Low to High
-              </option>
-            </select>
-            <HiOutlineAdjustmentsHorizontal className="absolute right-4 top-1/2 -translate-y-1/2 text-2xl text-[#2B1A0E]" />
-          </div>
         </div>
       </div>
     </div>

@@ -1,6 +1,3 @@
-// app/all-pets/page.jsx
-// এখানে "use client" থাকবে না!
-
 import Image from "next/image";
 import Link from "next/link";
 import { AiFillHeart, AiOutlineHeart } from "react-icons/ai";
