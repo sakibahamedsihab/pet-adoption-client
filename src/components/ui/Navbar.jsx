@@ -57,11 +57,6 @@ const Navbar = () => {
         <div className="hidden md:flex items-center gap-2 lg:gap-3">
           {user ? (
             <div className="flex items-center gap-3 lg:gap-4">
-              <Link href="/dashboard">
-                <button className="font-mono font-bold text-xs uppercase tracking-widest text-[#7B1F1F] bg-[#FAF6EE] border-[2px] border-[#2B1A0E] px-3 lg:px-4 py-2 shadow-[3px_3px_0px_#C9922A] hover:shadow-[1px_1px_0px_#C9922A] hover:translate-x-[2px] hover:translate-y-[2px] transition-all duration-150 cursor-pointer">
-                  Dashboard
-                </button>
-              </Link>
               <ProfileDropdown user={user} />
               <button
                 onClick={handleLogout}
