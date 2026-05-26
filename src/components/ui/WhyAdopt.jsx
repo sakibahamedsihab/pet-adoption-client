@@ -40,14 +40,14 @@ export default function WhyAdopt() {
           </h2>
         </motion.div>
 
-        {/* Cards Animation with Stagger Effect */}
+
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {reasons.map((reason, index) => (
             <motion.div
               key={index}
               initial={{ opacity: 0, y: 50 }}
               whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: index * 0.2 }} // একটার পর একটা আসবে
+              transition={{ duration: 0.5, delay: index * 0.2 }} // 
               viewport={{ once: true, margin: "-50px" }}
               className="bg-[#F5EDE0] border-[3px] border-[#2B1A0E] shadow-[8px_8px_0px_#2B1A0E] p-8 hover:translate-x-[4px] hover:translate-y-[4px] hover:shadow-[4px_4px_0px_#2B1A0E] transition-all"
             >

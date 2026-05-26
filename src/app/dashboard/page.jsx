@@ -17,19 +17,19 @@ export default function DashboardOverview() {
       if (!session?.user?.email) return;
 
       try {
-        // ১. ইউজারের অ্যাড করা সব পেট ফেচ করা
+     
         const petsRes = await fetch(
           `https://pet-adoption-platform-server-8g3c.onrender.com/pets?email=${session.user.email}`,
         );
         const petsData = await petsRes.json();
 
-        // ২. ইউজারের করা সব রিকোয়েস্ট ফেচ করা
+      
         const requestsRes = await fetch(
           `https://pet-adoption-platform-server-8g3c.onrender.com/adoption-requests?email=${session.user.email}`,
         );
         const requestsData = await requestsRes.json();
 
-        // ডাটা ক্যালকুলেশন
+       
         const totalListings = petsData.length;
         const adoptedPets = petsData.filter(
           (pet) => pet.adopted === true,
@@ -38,7 +38,7 @@ export default function DashboardOverview() {
           (req) => req.status === "pending",
         ).length;
 
-        // স্টেটে ডাটা সেট করা
+       
         setStats({
           totalListings,
           activeRequests,

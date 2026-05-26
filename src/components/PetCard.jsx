@@ -11,7 +11,11 @@ const PetCard = ({ pet }) => {
       {/* Image Container with Badge */}
       <div className="relative w-full h-52 border-b-[3px] border-[#2B1A0E] bg-[#2B1A0E] overflow-hidden">
         <Image
-          src={imageURL}
+          src={
+            imageURL
+              ? imageURL
+              : "http://imgs.search.brave.com/OLMISq1BL67FfnHPsh97Bcmt0aEr1fAzHIdMOM6WzYA/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9wbGFj/ZWhvbGQubmV0L2J1/aWxkaW5nLnN2Zw"
+          }
           alt={petName ? petName : "Not Found"}
           fill
           className="object-cover"

@@ -19,7 +19,7 @@ const RegisterPage = () => {
     const password = data.password;
     const confirmPassword = data.confirmPassword;
 
-    // ✦ পিডিএফ অনুযায়ী পাসওয়ার্ড ভ্যালিডেশন (Regex) ✦
+
     if (password.length < 6) {
       toast.error("Password must be at least 6 characters long.");
       setIsSubmitting(false);
@@ -41,7 +41,7 @@ const RegisterPage = () => {
       return;
     }
 
-    // Better Auth-এর signUp ফাংশন কল করা হচ্ছে
+
     const { data: authData, error } = await signUp.email({
       email: data.email,
       password: data.password,
@@ -55,7 +55,6 @@ const RegisterPage = () => {
       return;
     }
 
-    // রেজিস্ট্রেশন সফল হলে হোম পেজে পাঠিয়ে দেবে
     toast.success("Registration Successful! 🎉");
     router.push("/");
   }

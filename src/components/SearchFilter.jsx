@@ -8,7 +8,6 @@ const SearchFilter = () => {
   const pathname = usePathname();
   const { replace } = useRouter();
 
-  // URL আপডেট করার মূল ফাংশন
   const handleFilterChange = (term, key) => {
     const params = new URLSearchParams(searchParams);
     if (term) {
@@ -16,7 +15,7 @@ const SearchFilter = () => {
     } else {
       params.delete(key);
     }
-    // URL পরিবর্তন হবে, কিন্তু পেজ রিলোড হবে না
+
     replace(`${pathname}?${params.toString()}`);
   };
 
@@ -28,7 +27,6 @@ const SearchFilter = () => {
   return (
     <div className="bg-[#FAF8F5] border-[3px] border-[#2B1A0E] shadow-[8px_8px_0px_#2B1A0E] p-6 mb-16">
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-center">
-        {/* সার্চ বার */}
         <div className="relative md:col-span-2">
           <input
             type="text"
@@ -40,13 +38,12 @@ const SearchFilter = () => {
           <FiSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-2xl text-[#2B1A0E]" />
         </div>
 
-        {/* স্পিসিস ফিল্টার */}
         <div>
           <label className={labelClass}>Species</label>
           <select
             className={`${inputClass} rounded-full`}
             defaultValue={searchParams.get("species")?.toString() || ""}
-            onChange={(e) => handleFilterChange(e.target.value, "species")} // সিলেক্ট করলেই URL চেঞ্জ হবে
+            onChange={(e) => handleFilterChange(e.target.value, "species")}
           >
             <option value="">All Species</option>
             <option value="Dog">Dog</option>

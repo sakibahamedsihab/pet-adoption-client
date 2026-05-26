@@ -24,7 +24,6 @@ export default function PetCareTips() {
   return (
     <section className="bg-[#EAE2D3] px-6 py-20 border-b-[3px] border-[#2B1A0E] overflow-hidden">
       <div className="max-w-6xl mx-auto flex flex-col md:flex-row gap-12 items-center">
-        {/* Left Side Header - Slides in from Left */}
         <motion.div
           initial={{ opacity: 0, x: -50 }}
           whileInView={{ opacity: 1, x: 0 }}
@@ -44,14 +43,13 @@ export default function PetCareTips() {
           </p>
         </motion.div>
 
-        {/* Right Side Tips - Slides in from Right with Stagger */}
         <div className="md:w-2/3 flex flex-col gap-6">
           {tips.map((tip, index) => (
             <motion.div
               key={index}
               initial={{ opacity: 0, x: 50 }}
               whileInView={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.5, delay: index * 0.2 }} // একটার পর একটা আসবে
+              transition={{ duration: 0.5, delay: index * 0.2 }}
               viewport={{ once: true, margin: "-50px" }}
               className="bg-[#FAF6EE] border-[3px] border-[#2B1A0E] flex items-center p-6 shadow-[6px_6px_0px_#2B1A0E]"
             >

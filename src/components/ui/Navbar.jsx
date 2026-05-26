@@ -9,17 +9,14 @@ const Navbar = () => {
   const pathname = usePathname();
   const router = useRouter();
 
-  // ডাটাবেস থেকে আসল ইউজারের সেশন ডেটা নিয়ে আসা হচ্ছে
   const { data: session } = useSession();
   const user = session?.user;
 
-  // ✦ নেভবার একদম ক্লিন— শুধু মেইন পেজ দুটো রাখা হলো ✦
   const navLinks = [
     { label: "Home", href: "/" },
     { label: "All Pets", href: "/all-pets" },
   ];
 
-  // লগআউট করার ফাংশন
   const handleLogout = async () => {
     await signOut();
     router.push("/login");

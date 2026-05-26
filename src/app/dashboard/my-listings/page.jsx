@@ -60,7 +60,7 @@ export default function MyListingsPage() {
         { method: "DELETE" },
       );
       if (res.ok) {
-        toast.success("Pet deleted successfully! 🗑️"); // ✦ Alert এর বদলে Toast ✦
+        toast.success("Pet deleted successfully! 🗑️");
         setPets((prev) => prev.filter((pet) => pet._id !== petToDelete));
       } else {
         toast.error("Failed to delete pet.");
@@ -99,7 +99,6 @@ export default function MyListingsPage() {
     setPetRequests([]);
   };
 
-  // Approve বা Reject করার ফাংশন
   const handleRequestAction = async (requestId, newStatus) => {
     try {
       const res = await fetch(
@@ -107,21 +106,22 @@ export default function MyListingsPage() {
         {
           method: "PATCH",
           headers: { "Content-Type": "application/json" },
+
           body: JSON.stringify({ status: newStatus, petId: selectedPet._id }),
         },
       );
 
-      if (res.ok) {
-        toast.success(`Request ${newStatus} successfully!`); // ✦ Alert এর বদলে Toast ✦
+      const data = await res.json();
 
-        // লোকাল স্টেট আপডেট করা যেন সাথে সাথে পরিবর্তন দেখা যায়
+      if (res.ok) {
+        toast.success(`Request ${newStatus} successfully!`);
+
         setPetRequests((prev) =>
           prev.map((req) =>
             req._id === requestId ? { ...req, status: newStatus } : req,
           ),
         );
 
-        // যদি Approve হয়, তবে পেটের স্ট্যাটাস Adopted করে দেওয়া
         if (newStatus === "approved") {
           setPets((prev) =>
             prev.map((p) =>
@@ -129,12 +129,10 @@ export default function MyListingsPage() {
             ),
           );
 
-          // অ্যাপ্রুভ হয়ে গেলে মোডালের selectedPet এর adopted স্টেটও ট্রু করে দিচ্ছি
-          // যেন বাকি বাটনগুলো সাথে সাথে ডিজেবল হয়ে যায়
           setSelectedPet((prev) => ({ ...prev, adopted: true }));
         }
       } else {
-        toast.error("Action failed. Please try again.");
+        toast.error(data.message || "Action failed. Please try again.");
       }
     } catch (error) {
       console.error(`Error updating request status:`, error);
@@ -347,7 +345,7 @@ export default function MyListingsPage() {
                             onClick={() =>
                               handleRequestAction(req._id, "approved")
                             }
-                            disabled={selectedPet.adopted} // যদি পেটটি আগেই অ্যাপ্রুভড হয়ে যায়, তবে ডিজেবল থাকবে
+                            disabled={selectedPet.adopted}
                             className="bg-[#A7C957] text-[#2B1A0E] border-[2px] border-[#2B1A0E] px-3 py-1.5 text-xs font-bold uppercase tracking-widest hover:bg-[#8da84a] cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
                           >
                             Approve
@@ -356,7 +354,7 @@ export default function MyListingsPage() {
                             onClick={() =>
                               handleRequestAction(req._id, "rejected")
                             }
-                            disabled={selectedPet.adopted} // পেটটি অ্যাপ্রুভড হয়ে গেলে রিজেক্ট বাটনও ডিজেবল থাকবে
+                            disabled={selectedPet.adopted}
                             className="bg-[#7B1F1F] text-[#FAF6EE] border-[2px] border-[#2B1A0E] px-3 py-1.5 text-xs font-bold uppercase tracking-widest hover:bg-red-800 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
                           >
                             Reject

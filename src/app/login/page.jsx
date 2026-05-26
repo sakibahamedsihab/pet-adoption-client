@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { signIn } from "@/lib/auth-client";
 import { useState } from "react";
-import toast from "react-hot-toast"; // ✦ Toast ইমপোর্ট করা হলো ✦
+import toast from "react-hot-toast"; 
 
 const LoginPage = () => {
   const router = useRouter();
@@ -18,33 +18,33 @@ const LoginPage = () => {
     const formData = new FormData(event.currentTarget);
     const data = Object.fromEntries(formData);
 
-    // Better Auth-এর signIn ফাংশন কল করা হচ্ছে
+    
     const { data: authData, error } = await signIn.email({
       email: data.email,
       password: data.password,
     });
 
     if (error) {
-      toast.error(error.message || "Failed to login!"); // ✦ Alert রিমুভ করে Toast ✦
+      toast.error(error.message || "Failed to login!"); 
       setIsSubmitting(false);
       return;
     }
 
-    toast.success("Logged in successfully! 🎉"); // ✦ Success Toast ✦
-    // লগ-ইন সফল হলে হোম পেজ বা ড্যাশবোর্ডে রিডাইরেক্ট করবে
+    toast.success("Logged in successfully! 🎉"); 
+
     router.push("/");
   }
 
-  // ✦ গুগল লগ-ইন ফাংশন ✦
+
   const handleGoogleLogin = async () => {
     setIsGoogleSubmitting(true);
     const { data, error } = await signIn.social({
       provider: "google",
-      callbackURL: "/", // লগ-ইন সফল হলে হোম পেজে রিডাইরেক্ট করবে
+      callbackURL: "/", 
     });
 
     if (error) {
-      toast.error(error.message || "Google login failed!"); // ✦ Alert রিমুভ করে Toast ✦
+      toast.error(error.message || "Google login failed!"); // 
       setIsGoogleSubmitting(false);
     }
   };
@@ -112,7 +112,7 @@ const LoginPage = () => {
               {isSubmitting ? "Logging in..." : "✦ Login"}
             </button>
 
-            {/* ✦ গুগল লগ-ইন বাটন ✦ */}
+           
             <button
               type="button"
               onClick={handleGoogleLogin}
