@@ -4,12 +4,13 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useSession } from "@/lib/auth-client";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 export default function DashboardLayout({ children }) {
   const pathname = usePathname();
   const router = useRouter();
   const { data: session, isPending } = useSession();
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   // ইউজার লগ-ইন করা না থাকলে জোর করে লগ-ইন পেজে পাঠিয়ে দেবে (Private Route)
   useEffect(() => {
@@ -17,7 +18,10 @@ export default function DashboardLayout({ children }) {
       router.push("/login");
     }
   }, [session, isPending, router]);
-
+  useEffect(() => {
+    // Mobile এ ডিফল্ট sidebar বন্ধ রাখবে
+    setSidebarOpen(window.innerWidth >= 768);
+  }, []);
   if (isPending) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-[#F5EDE0]">
@@ -38,12 +42,41 @@ export default function DashboardLayout({ children }) {
     { label: "My Requests", href: "/dashboard/my-requests" },
   ];
 
+  const handleNavClick = () => {
+    if (window.innerWidth < 768) {
+      setSidebarOpen(false);
+    }
+  };
+
   return (
-    <div className="min-h-screen bg-[#F5EDE0] flex">
+    <div className="min-h-screen bg-[#F5EDE0] flex flex-col md:flex-row">
+      {/* Mobile Menu Toggle Button */}
+      <button
+        onClick={() => setSidebarOpen(!sidebarOpen)}
+        className="md:hidden bg-[#FAF6EE] border-b-[3px] border-[#2B1A0E] p-4 flex items-center gap-2"
+      >
+        <span className="text-xl">📋</span>
+        <span className="font-mono font-bold text-[#2B1A0E] uppercase">
+          Menu
+        </span>
+      </button>
+
+      {/* Mobile Overlay */}
+      {sidebarOpen && (
+        <div
+          className="md:hidden fixed inset-0 bg-black/50 z-40 top-0"
+          onClick={() => setSidebarOpen(false)}
+        />
+      )}
+
       {/* ✦ সাইডবার (Sidebar) ✦ */}
-      <aside className="w-64 bg-[#FAF6EE] border-r-[3px] border-[#2B1A0E] flex flex-col">
+      <aside
+        className={`fixed md:static top-0 left-0 h-full md:h-auto z-50 md:z-auto w-64 bg-[#FAF6EE] border-r-[3px] border-[#2B1A0E] flex flex-col transition-transform duration-300 ${
+          sidebarOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"
+        }`}
+      >
         <div className="p-6 border-b-[3px] border-[#2B1A0E]">
-          <h2 className="font-serif text-2xl font-black text-[#2B1A0E]">
+          <h2 className="font-serif text-xl md:text-2xl font-black text-[#2B1A0E]">
             Dashboard
           </h2>
           <p className="font-mono text-xs text-[#7B4F2E] mt-1">
@@ -51,13 +84,14 @@ export default function DashboardLayout({ children }) {
           </p>
         </div>
 
-        <nav className="flex-1 p-4 flex flex-col gap-2">
+        <nav className="flex-1 p-4 flex flex-col gap-2 overflow-y-auto">
           {sidebarLinks.map(({ label, href }) => {
             const isActive = pathname === href;
             return (
               <Link
                 key={href}
                 href={href}
+                onClick={handleNavClick}
                 className={`font-mono text-sm font-bold uppercase tracking-widest px-4 py-3 border-[2px] transition-all duration-150 ${
                   isActive
                     ? "bg-[#7B1F1F] text-[#FAF6EE] border-[#2B1A0E] shadow-[4px_4px_0px_#2B1A0E] translate-x-[-2px] translate-y-[-2px]"
@@ -72,7 +106,9 @@ export default function DashboardLayout({ children }) {
       </aside>
 
       {/* ✦ মূল কন্টেন্ট (Main Content Area) ✦ */}
-      <main className="flex-1 p-8 overflow-y-auto">{children}</main>
+      <main className="flex-1 p-4 sm:p-6 md:p-8 overflow-y-auto w-full md:w-auto">
+        {children}
+      </main>
     </div>
   );
 }

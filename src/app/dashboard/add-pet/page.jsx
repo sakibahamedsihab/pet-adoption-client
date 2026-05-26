@@ -55,20 +55,20 @@ export default function AddPetPage() {
     "font-mono text-xs font-bold text-[#7B1F1F] uppercase tracking-widest mb-1.5 block";
 
   return (
-    <div className="bg-[#FAF6EE] border-[3px] border-[#2B1A0E] shadow-[8px_8px_0px_#2B1A0E] p-8 max-w-4xl mx-auto">
-      <div className="mb-8 border-b-2 border-dashed border-[#C9922A] pb-4">
-        <h1 className="font-serif text-3xl font-black text-[#2B1A0E]">
+    <div className="bg-[#FAF6EE] border-[3px] border-[#2B1A0E] shadow-[8px_8px_0px_#2B1A0E] p-4 sm:p-6 md:p-8 max-w-4xl w-full mx-auto">
+      <div className="mb-6 sm:mb-8 border-b-2 border-dashed border-[#C9922A] pb-4">
+        <h1 className="font-serif text-2xl sm:text-3xl font-black text-[#2B1A0E]">
           Add a New Pet
         </h1>
-        <p className="font-mono text-sm text-[#7B4F2E] mt-2">
+        <p className="font-mono text-xs sm:text-sm text-[#7B4F2E] mt-2">
           Help a furry (or feathery) friend find their forever home by filling
           out the details below.
         </p>
       </div>
 
-      <form onSubmit={handleAddPet} className="flex flex-col gap-6">
+      <form onSubmit={handleAddPet} className="flex flex-col gap-4 sm:gap-6">
         {/* Row 1: Name & Species */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
           <div>
             <label className={labelClass}>Pet Name</label>
             <input
@@ -93,7 +93,7 @@ export default function AddPetPage() {
         </div>
 
         {/* Row 2: Breed & Age */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
           <div>
             <label className={labelClass}>Breed</label>
             <input
@@ -117,7 +117,7 @@ export default function AddPetPage() {
         </div>
 
         {/* Row 3: Gender & Image URL */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
           <div>
             <label className={labelClass}>Gender</label>
             <select name="gender" required className={inputClass}>
@@ -139,7 +139,7 @@ export default function AddPetPage() {
         </div>
 
         {/* Row 4: Health & Vaccination */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
           <div>
             <label className={labelClass}>Health Status</label>
             <select name="healthStatus" required className={inputClass}>
@@ -159,7 +159,7 @@ export default function AddPetPage() {
         </div>
 
         {/* Row 5: Location & Adoption Fee */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
           <div>
             <label className={labelClass}>Location</label>
             <input
