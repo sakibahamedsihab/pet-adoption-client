@@ -4,7 +4,9 @@ import PetCard from "./PetCard";
 export default async function FeaturedPets() {
   const res = await fetch(
     "https://pet-adoption-platform-server-8g3c.onrender.com/pets",
+    { cache: "no-store" },
   );
+
   const pets = await res.json();
   const filteredPets = pets.slice(0, 6);
 
